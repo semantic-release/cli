@@ -1,0 +1,12 @@
+# common
+coverage
+node_modules
+*.log
+.nyc_output
+.tests
+.tmp
+
+# source/config
+src
+*.yml
+.gitignore
