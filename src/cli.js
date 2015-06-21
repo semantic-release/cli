@@ -1,4 +1,4 @@
-const { readFileSync } = require('fs')
+const { readFileSync, writeFileSync } = require('fs')
 
 const async = require('async')
 const nopt = require('nopt')
@@ -8,7 +8,7 @@ const Logger = require('./logger')
 const repository = require('./lib/repository')
 const npm = require('./lib/npm')
 const github = require('./lib/github')
-const travis = require('./lib/travis')
+const ci = require('./lib/ci')
 
 const knownOpts = {
   debug: Boolean
@@ -31,10 +31,13 @@ export default function (argv) {
   } catch (e) {
     log.error('Could not read/parse `package.json`.')
     log.error('Please run `npm init`.')
+    log.silly(e)
     return
   }
-  async.applyEachSeries([ repository, npm, github, travis ], pkg, infoObj, (error) => {
+  async.applyEachSeries([ repository, npm, github, ci ], pkg, infoObj, (error) => {
     if (error) return log.silly(error)
+    log.verbose('Writing `package.json`.')
+    writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
     log.info('Done.')
   })
 }
