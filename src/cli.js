@@ -36,6 +36,8 @@ export default function (argv) {
   }
   async.applyEachSeries([ repository, npm, github, ci ], pkg, infoObj, (error) => {
     if (error) return log.silly(error)
+    delete pkg.version
+    pkg.scripts['semantic-release'] = 'semantic-release-core pre && npm publish && semantic-release-core post'
     log.verbose('Writing `package.json`.')
     writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
     log.info('Done.')
