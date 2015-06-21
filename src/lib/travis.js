@@ -1,12 +1,46 @@
-const { readFileSync } = require('fs')
+const { readFileSync, writeFileSync } = require('fs')
 const { join } = require('path')
 
 const async = require('async')
+const inquirer = require('inquirer')
 const _ = require('lodash')
 const Travis = require('travis-ci')
 const yaml = require('js-yaml')
 
 const home = process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME']
+
+const travisyml = {
+  language: 'node_js',
+  node_js: [ 'iojs' ],
+  sudo: false,
+  cache: {
+    directories: [ 'node_modules' ]
+  },
+  notifications: {
+    email: false
+  },
+  after_success: [ 'npm run semantic-release' ]
+}
+
+const travisyml_multi = _.assign({}, travisyml, {
+  node_js: [
+    'iojs',
+    'node'
+  ],
+  before_script: [
+    'curl -Lo travis_after_all.py https://git.io/vLSON'
+  ],
+  after_success: [
+    'python travis_after_all.py',
+    'export $(cat .to_export_back)',
+    'if [[ "$BUILD_LEADER|$BUILD_AGGREGATE_STATUS" = "YES|others_succeeded" ]]; rm -f travis_after_all.py .to_export_back && then npm run semantic-release; fi'
+  ],
+  after_failure: [
+    'python travis_after_all.py',
+    'export $(cat .to_export_back)',
+  ],
+  after_script: [ 'echo leader=$BUILD_LEADER status=$BUILD_AGGREGATE_STATUS' ]
+})
 
 function _waitSync (travis, cb) {
   travis.users.get((error, res) => {
@@ -54,6 +88,31 @@ function setEnvVar (infoObj, name, value, cb) {
     })
 }
 
+function createTravisYml (infoObj, cb) {
+  const log = infoObj.logger
+  const choices = [
+    'Single Node.js version.',
+    'Multiple Node.js versions.',
+    'Create no `.travis.yml`'
+  ]
+  inquirer.prompt([
+    {
+      type: 'list',
+      name: 'yml',
+      message: 'What kind of `.travis.yml` do you want?',
+      choices
+    }
+  ], (answers) => {
+    const ans = choices.indexOf(answers.yml)
+    if (ans === 2) return cb()
+    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisyml_multi)
+    log.verbose('Writing `.travis.yml`.')
+    writeFileSync('.travis.yml', tyml)
+    log.info('Successfully created `.travis.yml`.')
+    cb()
+  })
+}
+
 function setUpTravis (pkg, infoObj, cb) {
   const log = infoObj.logger
   const travis = infoObj.travis
@@ -84,7 +143,7 @@ function setUpTravis (pkg, infoObj, cb) {
             return cb(error)
           }
           log.info('Successfully set environment variables on TravisCI.')
-          cb()
+          createTravisYml(infoObj, cb)
         })
       })
     })
