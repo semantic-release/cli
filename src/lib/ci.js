@@ -7,7 +7,15 @@ const travis = require('./travis')
 const cis = {
   'TravisCI': travis.bind(null, 'https://api.travis-ci.org'),
   'TravisCI Pro': travis.bind(null, 'https://api.travis-ci.com'),
-  'TravisCI Enterprise': travis
+  'TravisCI Enterprise': travis,
+  'Other (print token)': (pkg, infoObj, cb) => {
+    const log = infoObj.logger
+    log.info(_.repeat('-', 46))
+    log.info(`GH_TOKEN=${infoObj.github.token}`)
+    log.info(`NPM_TOKEN=${infoObj.npm.token}`)
+    log.info(_.repeat('-', 46))
+    cb()
+  }
 }
 
 export default function (pkg, infoObj, cb) {
@@ -28,9 +36,7 @@ export default function (pkg, infoObj, cb) {
         protocols: [ 'http', 'https' ],
         require_protocol: true
       }),
-      when: (ans) => {
-        return ans.ci === choices[2]
-      }
+      when: (ans) => ans.ci === choices[2]
     }
   ], (answers) => {
     if (answers.endpoint) {

@@ -37,7 +37,7 @@ const travisyml_multi = _.assign({}, travisyml, {
   ],
   after_failure: [
     'python travis_after_all.py',
-    'export $(cat .to_export_back)',
+    'export $(cat .to_export_back)'
   ],
   after_script: [ 'echo leader=$BUILD_LEADER status=$BUILD_AGGREGATE_STATUS' ]
 })
