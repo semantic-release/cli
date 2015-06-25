@@ -34,7 +34,12 @@ export default function (argv) {
     log.silly(e)
     return
   }
-  async.applyEachSeries([ repository, npm, github, ci ], pkg, infoObj, (error) => {
+  async.applyEachSeries([
+    repository,
+    npm,
+    github,
+    ci
+  ], pkg, infoObj, (error) => {
     if (error) return log.silly(error)
     delete pkg.version
     pkg.scripts['semantic-release'] = 'semantic-release-core pre && npm publish && semantic-release-core post'
