@@ -21,6 +21,9 @@ function getRemoteUrl (pkg, callback) {
     if (!repo) return callback(new Error('no repository found'))
     pkg.repository = { type: 'git', url: `${ghUrl(repo)}.git` }
   }
+  if (/^git\+/.test(pkg.repository.url)) {
+    pkg.repository.url = pkg.repository.url.substr(4)
+  }
   callback(null, pkg.repository.url)
 }
 
