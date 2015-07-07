@@ -60,8 +60,6 @@
     "build:tests": "rm -rf .tests && mkdir -p .tests && babel tests --out-dir .tests",
     "coverage": "nyc report",
     "coveralls": "npm run coverage -- --reporter=lcovonly && cat coverage/lcov.info | coveralls",
-    "postpublish": "./bin/semantic-release.js post",
-    "prepublish": "npm run build && ./bin/semantic-release.js pre",
     "pretest": "npm run build && npm run build:tests",
     "test": "standard && tap .tests"
   },
