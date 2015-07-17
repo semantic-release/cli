@@ -1,5 +1,5 @@
 {
-  "name": "@semantic-release/cli",
+  "name": "semantic-release",
   "description": "automated semver compliant package publishing",
   "author": "Stephan Bönnemann <stephan@boennemann.me>",
   "bin": {
@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "standard": "^4.2.1",
-    "tap": "^1.2.0"
+    "tap": "^1.2.0",
+    "semantic-release-scripts": "^1.1.1"
   },
   "engines": {
     "iojs": "^1",
@@ -47,7 +48,6 @@
     "version"
   ],
   "license": "MIT",
-  "main": "dist/main.js",
   "optionalDependencies": {
     "babel": "^5.5.8"
   },
@@ -61,7 +61,8 @@
     "coverage": "nyc report",
     "coveralls": "npm run coverage -- --reporter=lcovonly && cat coverage/lcov.info | coveralls",
     "pretest": "npm run build && npm run build:tests",
-    "test": "standard && tap .tests"
+    "test": "standard && tap .tests",
+    "semantic-release": "semantic-release-scripts pre && npm publish && semantic-release-scripts post"
   },
   "standard": {
     "ignore": [
