@@ -2,7 +2,7 @@ const { readFileSync, writeFileSync } = require('fs')
 
 const async = require('async')
 const nopt = require('nopt')
-
+const request = require('request')
 const Logger = require('./logger')
 
 const repository = require('./lib/repository')
@@ -42,9 +42,20 @@ export default function (argv) {
   ], pkg, infoObj, (error) => {
     if (error) return log.silly(error)
     delete pkg.version
-    pkg.scripts['semantic-release'] = 'semantic-release-core pre && npm publish && semantic-release-core post'
-    log.verbose('Writing `package.json`.')
-    writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
-    log.info('Done.')
+    pkg.scripts['semantic-release'] = 'semantic-release-scripts pre && npm publish && semantic-release-scripts post'
+    request({
+      url: 'https://registry.npmjs.org/semantic-release-scripts',
+      json: true
+    }, (err, res, body) => {
+      if (err) {
+        log.error('Could not get latest `semantic-release-scripts` version.')
+        log.silly(err)
+      } else {
+        pkg.devDependencies['semantic-release-scripts'] = `^${body['dist-tags'].latest}`
+      }
+      log.verbose('Writing `package.json`.')
+      writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
+      log.info('Done.')
+    })
   })
 }
