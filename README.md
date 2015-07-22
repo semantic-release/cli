@@ -5,12 +5,12 @@
 [![NPM](https://nodei.co/npm/semantic-release-cli.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/semantic-release-cli/)
 [![NPM](https://nodei.co/npm/semantic-release.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/semantic-release/)
 
-## Automated [`semantic-release`](https://github.com/semantic-release/semantic-release-cli) setup
+## Automated [`semantic-release`](https://github.com/semantic-release/semantic-release) setup
 
 ```bash
 npm install -g semantic-release-cli
 
-cd you-module
+cd your-module
 semantic-release-cli setup
 ```
 
