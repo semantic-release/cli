@@ -10,6 +10,13 @@ const getLog = require('./lib/log')
 
 let pkg = JSON.parse(readFileSync('./package.json'))
 
+require('update-notifier')({
+  pkg: _.defaults(
+    require('../package.json'),
+    {version: '0.0.0'}
+  )
+}).notify()
+
 const knownOptions = {
   tag: String,
   version: Boolean,

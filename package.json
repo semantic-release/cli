@@ -23,6 +23,7 @@
     "parse-github-repo-url": "^1.0.0",
     "request": "^2.58.0",
     "travis-ci": "^2.0.3",
+    "update-notifier": "^0.5.0",
     "user-home": "^2.0.0",
     "validator": "^3.40.1"
   },
