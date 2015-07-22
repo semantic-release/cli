@@ -2,8 +2,9 @@
 coverage
 node_modules
 *.log
+.DS_Store
 .nyc_output
-.tests
+.test
 .tmp
 
 # build-artifacts

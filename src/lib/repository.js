@@ -18,7 +18,7 @@ function getRemoteUrl (pkg, callback) {
     } catch (e) {
       return callback(e)
     }
-    if (!repo) return callback(new Error('no repository found'))
+    if (!repo) return callback(new Error('No repository found.'))
     pkg.repository = { type: 'git', url: `${ghUrl(repo)}.git` }
   }
   if (/^git\+/.test(pkg.repository.url)) {
@@ -27,31 +27,33 @@ function getRemoteUrl (pkg, callback) {
   callback(null, pkg.repository.url)
 }
 
-export default function (pkg, infoObj, cb) {
-  const log = infoObj.logger
-  getRemoteUrl(pkg, (error, rurl) => {
-    if (error) {
-      log.error('Could not get repository url.')
-      log.error('Please create/add the repository.')
-      return cb(error)
+module.exports = function (pkg, info, cb) {
+  const log = info.log
+
+  getRemoteUrl(pkg, (err, rurl) => {
+    if (err) {
+      log.error('Could not get repository url. Please create/add the repository.', err)
+      return cb(err)
     }
-    log.info(`Detected git url: ${rurl}`)
-    infoObj.giturl = rurl
+
+    log.verbose(`Detected git url: ${rurl}`)
+    info.giturl = rurl
     const parsedUrl = parseGhUrl(rurl)
+
     if (!parsedUrl) {
-      log.info('Url is not a reqular GitHub url.')
+      log.info('Not a reqular GitHub URL.')
       let eurl = url.parse(rurl)
       delete eurl.pathname
       delete eurl.search
       delete eurl.query
       delete eurl.hash
+
       inquirer.prompt([{
         type: 'confirm',
         name: 'enterprise',
         message: 'Are you using GitHub Enterprise?',
         default: true
-      },
-      {
+      }, {
         type: 'input',
         name: 'url',
         message: 'What is your GitHub Enterprise url?',
@@ -63,30 +65,35 @@ export default function (pkg, infoObj, cb) {
         })
       }], (answers) => {
         if (answers.enterprise) {
-          infoObj.ghepurl = answers.url
+          info.ghepurl = answers.url
         }
-        cb()
+
+        cb(null)
       })
+
       return
     }
-    infoObj.ghrepo = { slug: parsedUrl }
+
+    info.ghrepo = {slug: parsedUrl}
+
     inquirer.prompt([{
       type: 'confirm',
       name: 'private',
       message: 'Is the GitHub repository private?',
       default: false
     }], (answers) => {
-      _.assign(infoObj.ghrepo, answers)
+      _.assign(info.ghrepo, answers)
       if (answers.private) {
-        return cb()
+        return cb(null)
       }
-      request.head(rurl, (error, res) => {
-        if (error || res.statusCode === 404) {
-          log.error('Could not find repository on GitHub.')
-          log.error('Please create and add the repository.')
-          return cb(error || new Error('repository not found'))
+
+      request.head(rurl, (err, res) => {
+        if (err || res.statusCode === 404) {
+          log.error('Could not find repository on GitHub. Please create and add the repository.')
+          return cb(err || new Error('GitHub repository not found.'))
         }
-        cb()
+
+        cb(null)
       })
     })
   })

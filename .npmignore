@@ -2,11 +2,14 @@
 coverage
 node_modules
 *.log
+.DS_Store
 .nyc_output
-.tests
+.test
 .tmp
 
 # source/config
 src
 *.yml
 .gitignore
+.editorconfig
+.npmrc

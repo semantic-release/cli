@@ -1,9 +1,9 @@
 {
-  "name": "semantic-release",
-  "description": "automated semver compliant package publishing",
-  "author": "Stephan Bönnemann <stephan@boennemann.me>",
+  "name": "semantic-release-cli",
+  "description": "setup automated semver compliant package publishing",
+  "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
   "bin": {
-    "semantic-release": "./bin/semantic-release.js"
+    "semantic-release-cli": "./bin/semantic-release.js"
   },
   "bugs": {
     "url": "https://github.com/semantic-release/cli/issues"
@@ -13,7 +13,7 @@
     "base32": "0.0.6",
     "github-url-from-git": "^1.4.0",
     "ini": "^1.3.4",
-    "inquirer": "^0.8.5",
+    "inquirer": "^0.9.0",
     "js-yaml": "^3.3.1",
     "lodash": "^3.9.3",
     "nopt": "^3.0.2",
@@ -23,17 +23,21 @@
     "parse-github-repo-url": "^1.0.0",
     "request": "^2.58.0",
     "travis-ci": "^2.0.3",
+    "user-home": "^2.0.0",
     "validator": "^3.40.1"
   },
   "devDependencies": {
+    "babel": "^5.5.8",
+    "mkdirp": "^0.5.1",
+    "nyc": "^3.0.0",
+    "rimraf": "^2.4.2",
+    "semantic-release": "^4.0.0",
     "standard": "^4.2.1",
-    "tap": "^1.2.0",
-    "semantic-release-scripts": "^1.1.1"
+    "tap": "^1.2.0"
   },
   "engines": {
-    "iojs": "^1",
-    "node": "^0.10",
-    "npm": "^2"
+    "node": ">0.10",
+    "npm": ">2"
   },
   "homepage": "https://github.com/semantic-release/cli",
   "keywords": [
@@ -48,27 +52,22 @@
     "version"
   ],
   "license": "MIT",
-  "optionalDependencies": {
-    "babel": "^5.5.8"
-  },
+  "main": "dist/index.js",
+  "preferGlobal": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/boennemann/semantic-release.git"
+    "url": "https://github.com/semantic-release/cli.git"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && babel src --out-dir dist",
-    "build:tests": "rm -rf .tests && mkdir -p .tests && babel tests --out-dir .tests",
+    "build": "rimraf dist && mkdirp dist && babel src --out-dir dist",
     "coverage": "nyc report",
-    "coveralls": "npm run coverage -- --reporter=lcovonly && cat coverage/lcov.info | coveralls",
-    "pretest": "npm run build && npm run build:tests",
-    "test": "standard && tap .tests",
-    "semantic-release": "semantic-release-scripts pre && npm publish && semantic-release-scripts post"
-  },
-  "standard": {
-    "ignore": [
-      "bin",
-      ".tests",
-      "dist"
-    ]
+    "coverage:upload": "npm run coverage -- --reporter=lcovonly && coveralls < coverage/lcov.info",
+    "prepublish": "npm run build",
+    "pretest:unit": "npm run build && npm run test:build",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "test": "npm run test:style && npm run test:unit",
+    "test:build": "rimraf .test && mkdirp .test && babel test --out-dir .test",
+    "test:style": "standard",
+    "test:unit": "nyc tap --no-cov .test/specs/*.js"
   }
 }

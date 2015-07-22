@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-var cli
-
 /* istanbul ignore next */
 try {
-  cli = require('../dist/cli')
-} catch (e) {
-  require('babel/register')
-  cli = require('../src/cli')
+  require('../dist')(process.argv)
+} catch (err) {
+  if (err.code === 'MODULE_NOT_FOUND') {
+    require('babel/register')
+    require('../src')(process.argv)
+  } else {
+    console.log(err)
+  }
 }
-
-cli(process.argv)
