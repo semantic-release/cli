@@ -32,7 +32,7 @@ module.exports = function (pkg, info, cb) {
 
   getRemoteUrl(pkg, (err, rurl) => {
     if (err) {
-      log.error('Could not get repository url. Please create/add the repository.', err)
+      log.error('Could not get repository url. Please create/add the repository.')
       return cb(err)
     }
 
