@@ -11,7 +11,7 @@ function getNpmToken (pkg, info, cb) {
     auth: info.npm
   }, (err, data) => {
     if (err) {
-      log.error('Could not login to npm registry. Check your credentials.', err)
+      log.error('Could not login to npm registry. Check your credentials.')
       return cb(err)
     }
 
@@ -26,7 +26,7 @@ module.exports = function (pkg, info, cb) {
 
   npmconf.load((err, conf) => {
     if (err) {
-      log.error('Could not load npm config.', err)
+      log.error('Could not load npm config.')
       return cb(err)
     }
 

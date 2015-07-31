@@ -95,7 +95,7 @@ module.exports = function (pkg, info, cb) {
 
     createAuthorization(info, (err, data) => {
       if (err) {
-        log.error('Could not login to GitHub. Check your credentials.', err)
+        log.error('Could not login to GitHub. Check your credentials.')
         return cb(err)
       }
 

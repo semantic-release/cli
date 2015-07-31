@@ -65,7 +65,7 @@ function setEnvVar (info, name, value, cb) {
     `/settings/env_vars?repository_id=${info.travis.repoid}`,
     (err, res) => {
       if (err) {
-        log.error('Could not get environment variables on Travis CI.', err)
+        log.error('Could not get environment variables on Travis CI.')
         return cb(err)
       }
 
@@ -82,7 +82,7 @@ function setEnvVar (info, name, value, cb) {
           }
         }, (err, res) => {
           if (err) {
-            log.error('Could not set environment variable on Travis CI.', err)
+            log.error('Could not set environment variable on Travis CI.')
             return cb(err)
           }
 
@@ -123,7 +123,7 @@ function setUpTravis (pkg, info, cb) {
     .repos(info.ghrepo.slug[0], info.ghrepo.slug[1])
     .get((err, res) => {
       if (err) {
-        log.error('Could not get repository on Travis CI.', err)
+        log.error('Could not get repository on Travis CI.')
         return cb(err)
       }
 
@@ -175,7 +175,7 @@ module.exports = function (endpoint, pkg, info, cb) {
       github_token: info.github.token
     }, (err) => {
       if (err) {
-        log.error('Could not login to Travis CI.', err)
+        log.error('Could not login to Travis CI.')
         return cb(err)
       }
 
