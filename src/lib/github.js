@@ -37,7 +37,12 @@ function createAuthorization (info, cb) {
     },
     body: {
       scopes: [
-        info.ghrepo && info.ghrepo.private ? 'repo' : 'public_repo'
+        'repo',
+        'read:org',
+        'user:email',
+        'repo_deployment',
+        'repo:status',
+        'write:repo_hook'
       ],
       note: `semantic-release${node}`
     }
