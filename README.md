@@ -60,6 +60,6 @@ Unfortunately there is no web interface for obtaining npm tokens yet, so you hav
 ## License
 
 MIT License
-2015 © Christoph Witzko and [contributors](https://github.com/boennemann/semantic-release/graphs/contributors)
+2015 © Christoph Witzko and [contributors](https://github.com/semantic-release/cli/graphs/contributors)
 
 ![https://twitter.com/trodrigues/status/509301317467373571](https://cloud.githubusercontent.com/assets/908178/6091690/cc86f58c-aeb8-11e4-94cb-15f15f486cde.png)
