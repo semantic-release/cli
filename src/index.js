@@ -8,11 +8,12 @@ const request = require('request')
 
 const getLog = require('./lib/log')
 
+const ownPkg = require('../package.json')
 let pkg = JSON.parse(readFileSync('./package.json'))
 
 require('update-notifier')({
   pkg: _.defaults(
-    require('../package.json'),
+    ownPkg,
     {version: '0.0.0'}
   )
 }).notify()
@@ -37,7 +38,7 @@ module.exports = function (argv) {
   }
 
   if (info.options.version) {
-    console.log(pkg.version || 'development')
+    console.log(ownPkg.version || 'development')
     process.exit(0)
   }
 
