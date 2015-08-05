@@ -37,8 +37,8 @@
     "tap": "^1.2.0"
   },
   "engines": {
-    "node": ">0.10",
-    "npm": ">2"
+    "node": ">=0.10",
+    "npm": ">=2"
   },
   "homepage": "https://github.com/semantic-release/cli",
   "keywords": [
