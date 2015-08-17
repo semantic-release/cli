@@ -23,6 +23,7 @@ function getRemoteUrl (pkg, callback) {
   }
   if (/^git\+/.test(pkg.repository.url)) {
     pkg.repository.url = pkg.repository.url.substr(4)
+    pkg.repository.url = pkg.repository.url.replace(/^ssh:\/\/git@/, 'https://')
   }
   callback(null, pkg.repository.url)
 }
