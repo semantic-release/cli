@@ -21,6 +21,9 @@ function getRemoteUrl (pkg, callback) {
     if (!repo) return callback(new Error('No repository found.'))
     pkg.repository = { type: 'git', url: `${ghUrl(repo)}.git` }
   }
+  if (/^git\+ssh/.test(pkg.repository.url)) {
+    pkg.repository.url = pkg.repository.url.replace('git+ssh://', 'https://')
+  }
   if (/^git\+/.test(pkg.repository.url)) {
     pkg.repository.url = pkg.repository.url.substr(4)
     pkg.repository.url = pkg.repository.url.replace(/^ssh:\/\/git@/, 'https://')
