@@ -83,12 +83,12 @@ module.exports = function (pkg, info, cb) {
     name: 'username',
     message: 'What is your GitHub username?',
     default: info.npm.username,
-    validate: _.bind(validator.isLength, validator, _, 1)
+    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
   }, {
     type: 'password',
     name: 'password',
     message: 'What is your GitHub password?',
-    validate: _.bind(validator.isLength, validator, _, 1)
+    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
   }], (answers) => {
     info.github = answers
     info.github.endpoint = info.ghepurl || 'https://api.github.com'

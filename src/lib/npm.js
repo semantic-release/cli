@@ -44,7 +44,7 @@ module.exports = function (pkg, info, cb) {
       name: 'username',
       message: 'What is your npm username?',
       default: conf.get('username'),
-      validate: _.bind(validator.isLength, null, _, 1)
+      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1)
     }, {
       type: 'input',
       name: 'email',
@@ -55,7 +55,7 @@ module.exports = function (pkg, info, cb) {
       type: 'password',
       name: 'password',
       message: 'What is your npm password?',
-      validate: _.bind(validator.isLength, null, _, 1)
+      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1)
     }], (answers) => {
       info.npm = answers
 
