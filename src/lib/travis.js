@@ -25,6 +25,7 @@ const travisyml = {
 
 const travisyml_multi = _.assign({}, travisyml, {
   node_js: [
+    'iojs-v3',
     'iojs-v2',
     'iojs-v1',
     '0.12',
