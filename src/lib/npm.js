@@ -4,6 +4,8 @@ const npmconf = require('npmconf')
 const RegClient = require('npm-registry-client')
 const validator = require('validator')
 
+const passwordStorage = require('./password-storage')('npm')
+
 function getNpmToken (pkg, info, cb) {
   const log = info.log
   const client = new RegClient({ log: log })
@@ -15,6 +17,9 @@ function getNpmToken (pkg, info, cb) {
       return cb(err)
     }
 
+    if (info.options.keychain) {
+      passwordStorage.set(info.npm.username, info.npm.password)
+    }
     info.npm.token = data.token
     log.info('Successfully created npm token.')
     cb(null)
@@ -55,8 +60,14 @@ module.exports = function (pkg, info, cb) {
       type: 'password',
       name: 'password',
       message: 'What is your npm password?',
-      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1)
+      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+      when: function (answers) {
+        if (!info.options.keychain) return true
+        if (info.options['ask-for-passwords']) return true
+        return !passwordStorage.get(answers.username)
+      }
     }], (answers) => {
+      answers.password = answers.password || passwordStorage.get(answers.username)
       info.npm = answers
 
       conf.set('username', answers.username, 'user')
