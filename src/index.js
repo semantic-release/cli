@@ -21,7 +21,9 @@ require('update-notifier')({
 const knownOptions = {
   tag: String,
   version: Boolean,
-  help: Boolean
+  help: Boolean,
+  keychain: Boolean,
+  'ask-for-passwords': Boolean
 }
 
 const shortHands = {
@@ -33,7 +35,10 @@ module.exports = function (argv) {
   let info = {
     options: _.defaults(
       nopt(knownOptions, shortHands, argv, 2),
-      {tag: 'next'}
+      {
+        keychain: true,
+        tag: 'next'
+      }
     )
   }
 
@@ -50,9 +55,11 @@ Usage:
   semantic-release-cli setup [--tag=<String>]
 
 Options:
-  -h --help      Show this screen.
-  -v --version   Show version.
-  --tag=<String> npm tag to install [default: 'next'].`)
+  -h --help           Show this screen.
+  -v --version        Show version.
+  --[no-]keychain     Use keychain to get passwords [default: true].
+  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
+  --tag=<String>      npm tag to install [default: 'next'].`)
     process.exit(0)
   }
 

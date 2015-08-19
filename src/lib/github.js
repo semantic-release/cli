@@ -6,6 +6,8 @@ const inquirer = require('inquirer')
 const request = require('request')
 const validator = require('validator')
 
+const passwordStorage = require('./password-storage')('github')
+
 function ask2FA (cb) {
   inquirer.prompt([{
     type: 'input',
@@ -88,8 +90,15 @@ module.exports = function (pkg, info, cb) {
     type: 'password',
     name: 'password',
     message: 'What is your GitHub password?',
-    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
+    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
+    when: function (answers) {
+      if (!info.options.keychain) return true
+      if (info.options['ask-for-passwords']) return true
+      return !passwordStorage.get(answers.username)
+    }
   }], (answers) => {
+    answers.password = answers.password || passwordStorage.get(answers.username)
+
     info.github = answers
     info.github.endpoint = info.ghepurl || 'https://api.github.com'
 
@@ -97,6 +106,10 @@ module.exports = function (pkg, info, cb) {
       if (err) {
         log.error('Could not login to GitHub. Check your credentials.')
         return cb(err)
+      }
+
+      if (info.options.keychain) {
+        passwordStorage.set(info.github.username, info.github.password)
       }
 
       info.github.token = data.token
