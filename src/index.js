@@ -37,7 +37,7 @@ module.exports = function (argv) {
       nopt(knownOptions, shortHands, argv, 2),
       {
         keychain: true,
-        tag: 'next'
+        tag: 'latest'
       }
     )
   }
@@ -59,7 +59,7 @@ Options:
   -v --version        Show version.
   --[no-]keychain     Use keychain to get passwords [default: true].
   --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
-  --tag=<String>      npm tag to install [default: 'next'].`)
+  --tag=<String>      npm tag to install [default: 'latest'].`)
     process.exit(0)
   }
 
