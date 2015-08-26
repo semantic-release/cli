@@ -22,10 +22,10 @@ function getRemoteUrl (pkg, callback) {
     pkg.repository = { type: 'git', url: `${ghUrl(repo)}.git` }
   }
 
-  let parsed = url.parse(pkg.repository.url);
-  parsed.auth = null;
-  parsed.protocol = 'https';
-  pkg.repository.url = url.format(parsed);
+  let parsed = url.parse(pkg.repository.url)
+  parsed.auth = null
+  parsed.protocol = 'https'
+  pkg.repository.url = url.format(parsed)
 
   callback(null, pkg.repository.url)
 }
