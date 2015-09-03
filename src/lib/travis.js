@@ -30,6 +30,15 @@ const travisyml_multi = _.assign({}, travisyml, {
     'iojs-v1',
     '0.12',
     '0.10'
+  ],
+  before_script: [
+    'npm prune',
+    'curl -Lo travis_after_all.py https://git.io/vLSON'
+  ],
+  after_success: [
+    'python travis_after_all.py',
+    'export $(cat .to_export_back)',
+    'npm run semantic-release'
   ]
 })
 
