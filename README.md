@@ -19,7 +19,7 @@ semantic-release-cli setup
 ## Options
 
 	Usage:
-	  semantic-release-cli setup [--tag=<String>]
+	  semantic-release-cli setup [options]
 
 	Options:
 	  -h --help           Show this screen.
