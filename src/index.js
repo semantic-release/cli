@@ -23,7 +23,9 @@ const knownOptions = {
   version: Boolean,
   help: Boolean,
   keychain: Boolean,
-  'ask-for-passwords': Boolean
+  'ask-for-passwords': Boolean,
+  'gh-token': String,
+  'npm-token': String
 }
 
 const shortHands = {
@@ -55,11 +57,13 @@ Usage:
   semantic-release-cli setup [--tag=<String>]
 
 Options:
-  -h --help           Show this screen.
-  -v --version        Show version.
-  --[no-]keychain     Use keychain to get passwords [default: true].
-  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
-  --tag=<String>      npm tag to install [default: 'latest'].`)
+  -h --help            Show this screen.
+  -v --version         Show version.
+  --[no-]keychain      Use keychain to get passwords [default: true].
+  --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
+  --tag=<String>       npm tag to install [default: 'latest'].
+  --gh-token=<String>  Github auth token
+  --npm-token=<String> NPM auth token`)
     process.exit(0)
   }
 

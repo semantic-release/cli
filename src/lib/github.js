@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const _ = require('lodash')
 const base32 = require('base32')
 const inquirer = require('inquirer')
+const npmconf = require('npmconf')
 const request = require('request')
 const validator = require('validator')
 
@@ -80,41 +81,57 @@ function createAuthorization (info, cb) {
 module.exports = function (pkg, info, cb) {
   const log = info.log
 
-  inquirer.prompt([{
-    type: 'input',
-    name: 'username',
-    message: 'What is your GitHub username?',
-    default: info.npm.username,
-    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
-  }, {
-    type: 'password',
-    name: 'password',
-    message: 'What is your GitHub password?',
-    validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
-    when: function (answers) {
-      if (!info.options.keychain) return true
-      if (info.options['ask-for-passwords']) return true
-      return !passwordStorage.get(answers.username)
+  npmconf.load((err, conf) => {
+    if (err) {
+      log.error('Could not load npm config.')
+      return cb(err)
     }
-  }], (answers) => {
-    answers.password = answers.password || passwordStorage.get(answers.username)
 
-    info.github = answers
-    info.github.endpoint = info.ghepurl || 'https://api.github.com'
-
-    createAuthorization(info, (err, data) => {
-      if (err) {
-        log.error('Could not login to GitHub. Check your credentials.')
-        return cb(err)
+    if (_.has(info.options, 'gh-token')) {
+      info.github = {
+        endpoint: info.ghepurl || 'https://api.github.com',
+        token: info.options['gh-token']
       }
+      log.info('Using GitHub token from command line argument.')
+      return cb(null)
+    }
 
-      if (info.options.keychain) {
-        passwordStorage.set(info.github.username, info.github.password)
+    inquirer.prompt([{
+      type: 'input',
+      name: 'username',
+      message: 'What is your GitHub username?',
+      default: conf.get('username'),
+      validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
+    }, {
+      type: 'password',
+      name: 'password',
+      message: 'What is your GitHub password?',
+      validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
+      when: function (answers) {
+        if (!info.options.keychain) return true
+        if (info.options['ask-for-passwords']) return true
+        return !passwordStorage.get(answers.username)
       }
+    }], (answers) => {
+      answers.password = answers.password || passwordStorage.get(answers.username)
 
-      info.github.token = data.token
-      log.info('Successfully created GitHub token.')
-      cb(null)
+      info.github = answers
+      info.github.endpoint = info.ghepurl || 'https://api.github.com'
+
+      createAuthorization(info, (err, data) => {
+        if (err) {
+          log.error('Could not login to GitHub. Check your credentials.')
+          return cb(err)
+        }
+
+        if (info.options.keychain) {
+          passwordStorage.set(info.github.username, info.github.password)
+        }
+
+        info.github.token = data.token
+        log.info('Successfully created GitHub token.')
+        cb(null)
+      })
     })
   })
 }

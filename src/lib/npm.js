@@ -49,27 +49,40 @@ module.exports = function (pkg, info, cb) {
       name: 'username',
       message: 'What is your npm username?',
       default: conf.get('username'),
-      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1)
+      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+      when: function (answers) {
+        return !_.has(info.options, 'npm-token')
+      }
     }, {
       type: 'input',
       name: 'email',
       message: 'What is your npm email?',
       default: conf.get('email'),
-      validate: validator.isEmail
+      validate: validator.isEmail,
+      when: function (answers) {
+        return !_.has(info.options, 'npm-token')
+      }
     }, {
       type: 'password',
       name: 'password',
       message: 'What is your npm password?',
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
       when: function (answers) {
+        if (_.has(info.options, 'npm-token')) return false
         if (!info.options.keychain) return true
         if (info.options['ask-for-passwords']) return true
         return !passwordStorage.get(answers.username)
       }
     }], (answers) => {
-      answers.password = answers.password || passwordStorage.get(answers.username)
       info.npm = answers
 
+      if (_.has(info.options, 'npm-token')) {
+        info.npm.token = info.options['npm-token']
+        log.info('Using NPM token from command line argument.')
+        return cb(null)
+      }
+
+      answers.password = answers.password || passwordStorage.get(answers.username)
       conf.set('username', answers.username, 'user')
       conf.set('email', answers.email, 'user')
 
