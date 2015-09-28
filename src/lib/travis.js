@@ -17,7 +17,7 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['iojs'],
+  node_js: ['4'],
   before_install: ['npm i -g npm@^2.0.0'],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release']
@@ -25,6 +25,7 @@ const travisyml = {
 
 const travisyml_multi = _.assign({}, travisyml, {
   node_js: [
+    '4',
     'iojs-v3',
     'iojs-v2',
     'iojs-v1',
