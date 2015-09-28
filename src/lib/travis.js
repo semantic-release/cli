@@ -20,7 +20,11 @@ const travisyml = {
   node_js: ['4'],
   before_install: ['npm i -g npm@^2.0.0'],
   before_script: ['npm prune'],
-  after_success: ['npm run semantic-release']
+  after_success: ['npm run semantic-release'],
+  branches: {
+    // ignore git tags created by semantic-release, like "v1.2.3"
+    except: ['/^v\d+\.\d+\.\d+$/']
+  }
 }
 
 const travisyml_multi = _.assign({}, travisyml, {
