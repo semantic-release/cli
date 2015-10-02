@@ -23,7 +23,7 @@ const travisyml = {
   after_success: ['npm run semantic-release'],
   branches: {
     // ignore git tags created by semantic-release, like "v1.2.3"
-    except: ['/^v\d+\.\d+\.\d+$/']
+    except: [/^v\d+\.\d+\.\d+$/.toString()]
   }
 }
 
