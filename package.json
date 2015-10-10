@@ -32,7 +32,7 @@
     "babel": "^5.5.8",
     "mkdirp": "^0.5.1",
     "nyc": "^3.0.0",
-    "rimraf": "^2.4.2",
+    "rimraf": "^2.4.3",
     "semantic-release": "^4.0.0",
     "standard": "^4.2.1",
     "tap": "^2.1.1"
