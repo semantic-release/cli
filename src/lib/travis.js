@@ -37,12 +37,12 @@ const travisyml_multi = _.assign({}, travisyml, {
     '0.10'
   ],
   before_script: [
-    'npm prune',
-    'curl -Lo travis_after_all.py https://git.io/vLSON'
+    'npm prune'
   ],
   after_success: [
+    'curl -Lo travis_after_all.py https://git.io/travis_after_all',
     'python travis_after_all.py',
-    'export $(cat .to_export_back)',
+    'export $(cat .to_export_back) &> /dev/null',
     'npm run semantic-release'
   ]
 })
