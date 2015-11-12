@@ -35,7 +35,7 @@
     "rimraf": "^2.4.2",
     "semantic-release": "^4.0.0",
     "standard": "^4.2.1",
-    "tap": "^2.1.1"
+    "tap": "^2.2.1"
   },
   "engines": {
     "node": ">=0.10",
