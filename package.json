@@ -22,7 +22,7 @@
     "npmconf": "^2.1.2",
     "npmlog": "^2.0.0",
     "parse-github-repo-url": "^1.0.0",
-    "request": "^2.58.0",
+    "request": "^2.67.0",
     "travis-ci": "^2.0.3",
     "update-notifier": "^0.5.0",
     "user-home": "^2.0.0",
