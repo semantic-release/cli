@@ -18,7 +18,7 @@
     "keytar": "^3.0.0",
     "lodash": "^3.10.1",
     "nopt": "^3.0.2",
-    "npm-registry-client": "^6.4.0",
+    "npm-registry-client": "^7.0.8",
     "npmconf": "^2.1.2",
     "npmlog": "^2.0.0",
     "parse-github-repo-url": "^1.0.0",
