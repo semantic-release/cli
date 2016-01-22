@@ -49,7 +49,7 @@ module.exports = function (argv) {
     process.exit(0)
   }
 
-  if (info.options.argv.remain[0] !== 'setup' || info.options.help) {
+  if (info.options.argv.remain[0] !== 'setup' || info.options.argv.remain[0] !== 'init' || info.options.help) {
     console.log(`
 semantic-release-cli
 
@@ -63,7 +63,10 @@ Options:
   --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
   --tag=<String>       npm tag to install [default: 'latest'].
   --gh-token=<String>  Github auth token
-  --npm-token=<String> NPM auth token`)
+  --npm-token=<String> NPM auth token
+
+Aliases:
+  init                 setup`)
     process.exit(0)
   }
 

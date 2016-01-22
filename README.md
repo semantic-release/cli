@@ -28,12 +28,15 @@ semantic-release-cli setup
 	  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
 	  --tag=<String>      npm tag to install [default: 'latest'].
 
+	Aliases:
+	  init                 setup
+
 ## What it Does
 __semantic-release-cli performs the following steps:__
 
 1. Asks for the information it needs. You will need to provide it with:
 	* Whether your GitHub repository is public or private
-	* Which NPM registry you want to use (Default: https://registry.npmjs.org/) 
+	* Which NPM registry you want to use (Default: https://registry.npmjs.org/)
 	* Your NPM username (unless passwords were previously saved to keychain)
 	* Your NPM email
 	* Your NPM password
@@ -64,7 +67,7 @@ __semantic-release-cli performs the following steps:__
 
 ## Other CI Servers
 
-By default, `semantic-release-cli` supports the popular Travis CI server. If you select `Other` as your server during configuration, `semantic-release-cli` will print out the environment variables you need to set on your CI server. You will be responsible for adding these environment variables as well as configuring your CI server to run `npm run semantic-release` after all the builds pass. 
+By default, `semantic-release-cli` supports the popular Travis CI server. If you select `Other` as your server during configuration, `semantic-release-cli` will print out the environment variables you need to set on your CI server. You will be responsible for adding these environment variables as well as configuring your CI server to run `npm run semantic-release` after all the builds pass.
 
 Note that your CI server will also need to set the environment variable `CI=true` so that `semantic-release` will not perform a dry run. (Most CI services do this by default.) See the `semantic-release` documentation for more details.
 
