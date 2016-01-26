@@ -49,7 +49,7 @@ module.exports = function (argv) {
     process.exit(0)
   }
 
-  if (info.options.argv.remain[0] !== 'setup' || info.options.argv.remain[0] !== 'init' || info.options.help) {
+  if (info.options.argv.remain[0] !== 'setup' && info.options.argv.remain[0] !== 'init' || info.options.help) {
     console.log(`
 semantic-release-cli
 
