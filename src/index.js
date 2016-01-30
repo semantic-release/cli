@@ -24,6 +24,7 @@ const knownOptions = {
   help: Boolean,
   keychain: Boolean,
   'ask-for-passwords': Boolean,
+  'retain-version': Boolean,
   'gh-token': String,
   'npm-token': String
 }
@@ -61,6 +62,7 @@ Options:
   -v --version         Show version.
   --[no-]keychain      Use keychain to get passwords [default: true].
   --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
+  --retain-version     Retain version field in package.json [default: false].
   --tag=<String>       npm tag to install [default: 'latest'].
   --gh-token=<String>  Github auth token
   --npm-token=<String> NPM auth token
@@ -90,7 +92,9 @@ Aliases:
         process.exit(1)
       }
 
-      delete pkg.version
+      if (!info.options['retain-version']) {
+        delete pkg.version
+      }
 
       pkg.scripts = pkg.scripts || {}
       pkg.scripts['semantic-release'] = 'semantic-release pre && npm publish && semantic-release post'

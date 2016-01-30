@@ -26,6 +26,7 @@ semantic-release-cli setup
 	  -v --version        Show version.
 	  --[no-]keychain     Use keychain to get passwords [default: true].
 	  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
+    --retain-version     Retain version field in package.json [default: false].
 	  --tag=<String>      npm tag to install [default: 'latest'].
 
 	Aliases:
