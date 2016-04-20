@@ -51,10 +51,22 @@ __semantic-release-cli performs the following steps:__
 1. Create GitHub Personal Token
 	* Logs into GitHub using the username and password provided
 	* Creates a [GitHub Personal Access Token](https://github.com/settings/tokens) and saves it for future use
+		* Required scope is: `repo`, `read:org`, `user:email`, `repo_deployment`, `repo:status`, `write:repo_hook`
 1. Overwrite your .travis.yml file (if Travis CI was selected)
-	* `before_install: npm i -g npm@^2.0.0`: install NPM 2
-	* `before_script: curl -Lo travis_after_all.py https://git.io/vLSON`: install [travis-after-all](https://github.com/travis-ci/travis-ci/issues/929) script to enable running `semantic-release` after ALL build succeed
-	* `after_success: python travis_after_all.py` and `npm run semantic-release`: run `semantic-release` exactly once after all builds pass
+	* Add the following section:
+		```yml
+		before_install:
+		  # install NPM 2
+		  - npm i -g npm@^2.0.0
+		after_success:
+		  # install travis-after-all script to enable running `semantic-release` after ALL build succeed
+		  - 'curl -Lo travis_after_all.py https://git.io/travis_after_all'
+		  # run `semantic-release` exactly once after all builds pass
+		  - python travis_after_all.py
+		  - export $(cat .to_export_back) &> /dev/null
+		  - npm run semantic-release
+		```
+
 	* Set other sane defaults: `sudo: false`, `cache: directories: node_modules`, `notifications: email: false`, `before_script: npm prune`
 1. Update your package.json
 	* Remove `version` field (you don't need it anymore -- `semantic-release` will set the version for you automatically)
@@ -64,6 +76,10 @@ __semantic-release-cli performs the following steps:__
 1. Login to Travis CI to configure the package
 	* Enable builds of your repo
 	* Add GH_TOKEN and NPM_TOKEN environment variables in the settings
+
+## Manual Setup
+
+You would have to follow Step 3 to Step 7 of [what semantic-release-cli does](#what-it-does) to setup without authorizing full access to your account.
 
 ## Other CI Servers
 
