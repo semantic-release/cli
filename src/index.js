@@ -93,7 +93,15 @@ Aliases:
       delete pkg.version
 
       pkg.scripts = pkg.scripts || {}
-      pkg.scripts['semantic-release'] = 'semantic-release pre && npm publish && semantic-release post'
+
+      var npmPublish = 'npm publish'
+
+      // Force private publishing if the repo is private by default
+      if (info.ghrepo.private) {
+        npmPublish += ' --access restricited'
+      }
+
+      pkg.scripts['semantic-release'] = 'semantic-release pre && ' + npmPublish + ' && semantic-release post'
 
       pkg.repository = pkg.repository || {
         type: 'git',
