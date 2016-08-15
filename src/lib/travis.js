@@ -17,7 +17,7 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['4'],
+  node_js: ['6'],
   before_install: ['npm i -g npm@^2.0.0'],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
@@ -27,12 +27,10 @@ const travisyml = {
   }
 }
 
-const travisyml_multi = _.assign({}, travisyml, {
+const travisymlMulti = _.assign({}, travisyml, {
   node_js: [
+    '6',
     '4',
-    'iojs-v3',
-    'iojs-v2',
-    'iojs-v1',
     '0.12',
     '0.10'
   ],
@@ -112,7 +110,7 @@ function createTravisYml (info, cb) {
   }], (answers) => {
     const ans = choices.indexOf(answers.yml)
     if (ans === 2) return cb()
-    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisyml_multi)
+    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisymlMulti)
     log.verbose('Writing `.travis.yml`.')
     writeFileSync('.travis.yml', tyml)
     log.info('Successfully created `.travis.yml`.')
