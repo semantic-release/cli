@@ -3,5 +3,5 @@
 try {
   require('../dist')(process.argv)
 } catch (err) {
-    console.log(err)
+  console.log(err)
 }
