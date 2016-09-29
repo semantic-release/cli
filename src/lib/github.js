@@ -3,7 +3,7 @@ const crypto = require('crypto')
 const _ = require('lodash')
 const base32 = require('base32')
 const inquirer = require('inquirer')
-const npmconf = require('npmconf')
+const npmconf = require('npm')
 const request = require('request')
 const validator = require('validator')
 

@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const inquirer = require('inquirer')
-const npmconf = require('npmconf')
+const npmconf = require('npm')
 const RegClient = require('npm-registry-client')
 const validator = require('validator')
 
