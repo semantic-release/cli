@@ -12,13 +12,14 @@ addons:
     - gnome-keyring
     - libgnome-keyring-dev
 node_js:
-- '4'
-- '6'
+  - '4'
+  - '6'
 before_script:
-- npm prune
+  - npm prune
+  - npm update
 after_success:
-- curl -Lo travis_after_all.py https://git.io/travis_after_all
-- python travis_after_all.py
-- export $(cat .to_export_back) &> /dev/null
-- npm run coverage:upload
-- npm run semantic-release
+  - curl -Lo travis_after_all.py https://git.io/travis_after_all
+  - python travis_after_all.py
+  - export $(cat .to_export_back) &> /dev/null
+  - npm run coverage:upload
+  - npm run semantic-release
