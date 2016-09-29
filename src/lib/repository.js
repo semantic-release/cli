@@ -66,7 +66,7 @@ module.exports = function (pkg, info, cb) {
           protocols: [ 'http', 'https' ],
           require_protocol: true
         })
-      }], (answers) => {
+      }]).then((answers) => {
         if (answers.enterprise) {
           info.ghepurl = answers.url
         }
@@ -84,7 +84,7 @@ module.exports = function (pkg, info, cb) {
       name: 'private',
       message: 'Is the GitHub repository private?',
       default: false
-    }], (answers) => {
+    }]).then((answers) => {
       _.assign(info.ghrepo, answers)
       if (answers.private) {
         return cb(null)

@@ -109,7 +109,7 @@ function createTravisYml (info, cb) {
     name: 'yml',
     message: 'What kind of `.travis.yml` do you want?',
     choices
-  }], (answers) => {
+  }]).then((answers) => {
     const ans = choices.indexOf(answers.yml)
     if (ans === 2) return cb()
     const tyml = yaml.safeDump(ans === 0 ? travisyml : travisyml_multi)

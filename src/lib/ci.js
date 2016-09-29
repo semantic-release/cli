@@ -38,7 +38,7 @@ module.exports = function (pkg, info, cb) {
       require_protocol: true
     }),
     when: (ans) => ans.ci === choices[2]
-  }], (answers) => {
+  }]).then((answers) => {
     if (answers.endpoint) {
       return cis[answers.ci](answers.endpoint, pkg, info, cb)
     }

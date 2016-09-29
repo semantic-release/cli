@@ -3,7 +3,7 @@ const { readFileSync, writeFileSync } = require('fs')
 const _ = require('lodash')
 const async = require('async')
 const nopt = require('nopt')
-const npm = require('npm')
+const npmconf = require('npmconf')
 const request = require('request')
 
 const getLog = require('./lib/log')
@@ -70,12 +70,11 @@ Aliases:
     process.exit(0)
   }
 
-  npm.load((err, conf) => {
+  npmconf.load((err, conf) => {
     if (err) {
       log.error('Failed to load npm config.', err)
       process.exit(1)
     }
-
     info.loglevel = conf.get('loglevel') || 'warn'
     const log = info.log = getLog(info.loglevel)
 

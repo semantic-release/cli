@@ -17,9 +17,10 @@
     "js-yaml": "^3.3.1",
     "keytar": "^3.0.0",
     "lodash": "^4.16.2",
-    "npm": "^3.10.8",
     "nopt": "^3.0.2",
+    "npm": "^3.10.8",
     "npm-registry-client": "^7.2.1",
+    "npmconf": "^2.1.2",
     "npmlog": "^4.0.0",
     "parse-github-repo-url": "^1.0.0",
     "request": "^2.58.0",
@@ -65,7 +66,7 @@
     "url": "https://github.com/semantic-release/cli.git"
   },
   "watch": {
-    "build": "src/*.js"
+    "build": "src/**/*.js"
   },
   "scripts": {
     "build": "rimraf dist && mkdirp dist && babel src --out-dir dist",

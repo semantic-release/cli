@@ -3,7 +3,7 @@ const crypto = require('crypto')
 const _ = require('lodash')
 const base32 = require('base32')
 const inquirer = require('inquirer')
-const npmconf = require('npm')
+const npmconf = require('npmconf')
 const request = require('request')
 const validator = require('validator')
 
@@ -15,7 +15,7 @@ function ask2FA (cb) {
     name: 'code',
     message: 'What is your GitHub two-factor authentication code?',
     validate: validator.isNumeric
-  }], (answers) => {
+  }]).then((answers) => {
     cb(answers.code)
   })
 }

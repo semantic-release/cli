@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const inquirer = require('inquirer')
-const npmconf = require('npm')
+const npmconf = require('npmconf')
 const RegClient = require('npm-registry-client')
 const validator = require('validator')
 
@@ -39,7 +39,7 @@ module.exports = function (pkg, info, cb) {
       type: 'input',
       name: 'registry',
       message: 'What is your npm registry?',
-      default: conf.get('registry'),
+      default: 'https://registry.npmjs.org/',
       validate: _.bind(validator.isURL, null, _, {
         protocols: [ 'http', 'https' ],
         require_protocol: true
@@ -73,7 +73,7 @@ module.exports = function (pkg, info, cb) {
         if (info.options['ask-for-passwords']) return true
         return !passwordStorage.get(answers.username)
       }
-    }], (answers) => {
+    }]).then((answers) => {
       info.npm = answers
 
       if (_.has(info.options, 'npm-token')) {
