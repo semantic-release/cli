@@ -8,7 +8,7 @@ notifications:
 addons:
   apt:
     packages:
-    - g++-4.8
+    - g++
     - xvfb
     - libgnome-keyring-dev
 node_js:
