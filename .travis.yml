@@ -10,7 +10,6 @@ addons:
     packages:
     - g++-4.8
     - xvfb
-    - gnome-keyring
     - libgnome-keyring-dev
 node_js:
   - '4'
