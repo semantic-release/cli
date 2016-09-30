@@ -27,7 +27,7 @@ const travisyml = {
   }
 }
 
-const travisyml_multi = _.assign({}, travisyml, {
+const travisymlMulti = _.assign({}, travisyml, {
   node_js: [
     '4',
     'iojs-v3',
@@ -109,10 +109,10 @@ function createTravisYml (info, cb) {
     name: 'yml',
     message: 'What kind of `.travis.yml` do you want?',
     choices
-  }], (answers) => {
+  }]).then((answers) => {
     const ans = choices.indexOf(answers.yml)
     if (ans === 2) return cb()
-    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisyml_multi)
+    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisymlMulti)
     log.verbose('Writing `.travis.yml`.')
     writeFileSync('.travis.yml', tyml)
     log.info('Successfully created `.travis.yml`.')

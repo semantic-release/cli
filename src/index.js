@@ -75,7 +75,6 @@ Aliases:
       log.error('Failed to load npm config.', err)
       process.exit(1)
     }
-
     info.loglevel = conf.get('loglevel') || 'warn'
     const log = info.log = getLog(info.loglevel)
 
