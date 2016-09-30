@@ -7,8 +7,12 @@ notifications:
   email: false
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
-    - g++
+    - gcc-4.8
+    - g++-4.8
+    - clang
     - xvfb
     - libgnome-keyring-dev
 node_js:
