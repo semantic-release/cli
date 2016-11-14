@@ -1,15 +1,18 @@
-const pkg = require('../../package.json')
-const keytar = require('keytar')
+const log = require('npmlog')
 
 module.exports = function (service) {
-  var key = pkg.name + ':' + service
-
-  return {
-    get: function (username) {
-      return keytar.getPassword(key, username)
-    },
-    set: function (username, password) {
-      keytar.replacePassword(key, username, password)
+  try {
+    var keytar = require('keytar')
+  } catch (e) {
+    return {
+      get: () => {},
+      set: () => log.warn('keytar is not installed correcty, not saving password')
     }
+  }
+
+  const key = `semantic-release-cli:${service}`
+  return {
+    get: username => keytar.getPassword(key, username),
+    set: (username, password) => keytar.replacePassword(key, username, password)
   }
 }

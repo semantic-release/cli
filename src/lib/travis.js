@@ -1,15 +1,15 @@
-const { readFileSync, writeFileSync } = require('fs')
-const { join } = require('path')
+const {readFileSync, writeFileSync, accessSync} = require('fs')
+const {join} = require('path')
 
 const _ = require('lodash')
-const async = require('async')
+const {promisify, delay} = require('bluebird')
 const home = require('user-home')
 const inquirer = require('inquirer')
 const Travis = require('travis-ci')
 const yaml = require('js-yaml')
+const log = require('npmlog')
 
 const travisyml = {
-  sudo: false,
   language: 'node_js',
   cache: {
     directories: ['node_modules']
@@ -17,8 +17,7 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['4'],
-  before_install: ['npm i -g npm@^2.0.0'],
+  node_js: ['6'],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
   branches: {
@@ -27,146 +26,109 @@ const travisyml = {
   }
 }
 
-const travisyml_multi = _.assign({}, travisyml, {
+const travisymlMulti = _.assign({}, travisyml, {
   node_js: [
     '4',
-    'iojs-v3',
-    'iojs-v2',
-    'iojs-v1',
-    '0.12',
-    '0.10'
-  ],
-  before_script: [
-    'npm prune'
+    '6',
+    '7'
   ],
   after_success: [
-    'curl -Lo travis_after_all.py https://git.io/travis_after_all',
+    'curl -Lo travis_after_all.py https://git.io/vXXtr',
     'python travis_after_all.py',
     'export $(cat .to_export_back) &> /dev/null',
     'npm run semantic-release'
   ]
 })
 
-function _waitSync (travis, cb) {
-  travis.users.get((error, res) => {
-    if (res.user.is_syncing) {
-      return setTimeout(_waitSync.bind(null, travis, cb), error ? 1000 : 300)
-    }
-
-    cb(null)
-  })
+async function isSyncing (travis) {
+  try {
+    var res = await promisify(travis.users.get.bind(travis))()
+    return _.get(res, 'user.is_syncing')
+  } catch (e) {}
 }
 
-function syncTravis (travis, cb) {
-  travis.users.sync.post(() => {
-    _waitSync(travis, cb)
-  })
+async function syncTravis (travis) {
+  try {
+    await promisify(travis.users.sync.post.bind(travis))()
+  } catch (e) {
+    if (e.message !== 'Sync already in progress. Try again later.') throw e
+  }
+
+  while (await isSyncing(travis)) {
+    await delay(1000)
+  }
 }
 
-function setEnvVar (info, name, value, cb) {
-  const log = info.log
-  const tagent = info.travis.agent
-  tagent.request(
-    'GET',
-    `/settings/env_vars?repository_id=${info.travis.repoid}`,
-    (err, res) => {
-      if (err) {
-        log.error('Could not get environment variables on Travis CI.')
-        return cb(err)
-      }
+async function setEnvVar (travis, name, value) {
+  const tagent = travis.agent
+  const response = await promisify(tagent.request.bind(tagent))('GET', `/settings/env_vars?repository_id=${travis.repoid}`)
+  let envid = _.get(_.find(response.env_vars, ['name', name]), 'id')
+  envid = envid ? `/${envid}` : ''
 
-      let envid = _.result(_.find(res.env_vars, 'name', name), 'id')
-      envid = envid ? `/${envid}` : ''
-
-      tagent.request(
-        envid ? 'PATCH' : 'POST',
-        `/settings/env_vars${envid}?repository_id=${info.travis.repoid}`, {
-          env_var: {
-            name,
-            value,
-            public: false
-          }
-        }, (err, res) => {
-          if (err) {
-            log.error('Could not set environment variable on Travis CI.')
-            return cb(err)
-          }
-
-          cb(null)
-        })
-    })
+  await await promisify(tagent.request.bind(tagent))(
+    envid ? 'PATCH' : 'POST',
+    `/settings/env_vars${envid}?repository_id=${travis.repoid}`,
+    {env_var: {name, value, public: false}}
+  )
 }
 
-function createTravisYml (info, cb) {
-  const log = info.log
+async function createTravisYml (info) {
   const choices = [
     'Single Node.js version.',
     'Multiple Node.js versions.',
     'Create no `.travis.yml`'
   ]
-  inquirer.prompt([{
+  const answers = await inquirer.prompt([{
     type: 'list',
     name: 'yml',
     message: 'What kind of `.travis.yml` do you want?',
     choices
-  }], (answers) => {
-    const ans = choices.indexOf(answers.yml)
-    if (ans === 2) return cb()
-    const tyml = yaml.safeDump(ans === 0 ? travisyml : travisyml_multi)
-    log.verbose('Writing `.travis.yml`.')
-    writeFileSync('.travis.yml', tyml)
-    log.info('Successfully created `.travis.yml`.')
-
-    cb(null)
-  })
-}
-
-function setUpTravis (pkg, info, cb) {
-  const log = info.log
-  const travis = info.travis
-  syncTravis(travis, () => {
-    travis
-    .repos(info.ghrepo.slug[0], info.ghrepo.slug[1])
-    .get((err, res) => {
-      if (err) {
-        log.error('Could not get repository on Travis CI.')
-        return cb(err)
-      }
-
-      info.travis.repoid = res.repo.id
-      travis.hooks(res.repo.id).put({
-        hook: {active: true}
-      }, (err, res) => {
-        if (err || !res.result) {
-          log.error('Could not create Travis CI hook.')
-          return cb(err || new Error('Could not enable hook on Travis CI'))
-        }
-
-        log.info('Successfully created Travis CI hook.')
-
-        async.series([
-          setEnvVar.bind(null, info, 'GH_TOKEN', info.github.token),
-          setEnvVar.bind(null, info, 'NPM_TOKEN', info.npm.token)
-        ], (err) => {
-          if (err) {
-            return cb(err)
-          }
-
-          log.info('Successfully set environment variables on Travis CI.')
-          createTravisYml(info, cb)
-        })
-      })
-    })
-  })
-}
-
-module.exports = function (endpoint, pkg, info, cb) {
-  const log = info.log
-  const travisPath = join(home, '.travis/config.yml')
-  let token
+  }])
+  const ans = choices.indexOf(answers.yml)
+  if (ans === 2) return
+  const tyml = yaml.safeDump(ans === 0 ? travisyml : travisymlMulti)
   try {
-    let travisConfig = yaml.safeLoad(readFileSync(travisPath, 'utf8'))
-    token = travisConfig.endpoints[`${endpoint}/`].access_token
+    accessSync('.travis.yml')
+    const {ok} = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'ok',
+      default: false,
+      message: 'Do you want to overwrite the existing `.travis.yml`?'
+    }])
+    if (!ok) return
+  } catch (e) {}
+  log.verbose('Writing `.travis.yml`.')
+  writeFileSync('.travis.yml', tyml)
+  log.info('Successfully created `.travis.yml`.')
+}
+
+async function setUpTravis (pkg, info) {
+  const travis = info.travis
+
+  log.info('Syncing repositories...')
+  await syncTravis(travis)
+
+  const {repo} = await promisify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))()
+  travis.repoid = repo.id
+
+  const {result} = await promisify(travis.hooks(repo.id).put.bind(travis))({
+    hook: {active: true}
+  })
+  if (!result) throw new Error('Could not enable hook on Travis CI')
+  log.info('Successfully created Travis CI hook.')
+
+  await setEnvVar(travis, 'GH_TOKEN', info.github.token)
+  await setEnvVar(travis, 'NPM_TOKEN', info.npm.token)
+  log.info('Successfully set environment variables on Travis CI.')
+  await createTravisYml(info)
+}
+
+module.exports = async function (endpoint, pkg, info) {
+  const travisPath = join(home, '.travis/config.yml')
+
+  try {
+    const travisConfig = yaml.safeLoad(readFileSync(travisPath, 'utf8'))
+    var token = travisConfig.endpoints[`${endpoint}/`].access_token
   } catch (e) {
     log.info('Could not load Travis CI config for endpoint.')
   }
@@ -174,26 +136,14 @@ module.exports = function (endpoint, pkg, info, cb) {
   const travis = info.travis = new Travis({
     version: '2.0.0',
     headers: {
-      'user-agent': 'Oghliner'
+      // Won't work with a different user-agent ¯\_(ツ)_/¯
+      'User-Agent': 'Travis'
     }
   })
   travis.agent._endpoint = endpoint
 
-  if (!token) {
-    travis.authenticate({
-      github_token: info.github.token
-    }, (err) => {
-      if (err) {
-        log.error('Could not login to Travis CI.')
-        return cb(err)
-      }
+  if (token) travis.agent.setAccessToken(token)
+  else await promisify(travis.authenticate.bind(travis))({github_token: info.github.token})
 
-      setUpTravis(pkg, info, cb)
-    })
-
-    return
-  }
-
-  travis.agent.setAccessToken(token)
-  setUpTravis(pkg, info, cb)
+  await setUpTravis(pkg, info)
 }

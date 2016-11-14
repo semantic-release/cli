@@ -1,4 +1,4 @@
-const { readFileSync } = require('fs')
+const {readFileSync} = require('fs')
 const url = require('url')
 
 const _ = require('lodash')
@@ -6,98 +6,79 @@ const ghUrl = require('github-url-from-git')
 const ini = require('ini')
 const inquirer = require('inquirer')
 const parseGhUrl = require('parse-github-repo-url')
-const request = require('request')
+const request = require('request-promise').defaults({resolveWithFullResponse: true})
 const validator = require('validator')
+const log = require('npmlog')
 
-function getRemoteUrl (pkg, callback) {
-  if (!pkg.repository || !pkg.repository.url) {
-    let gitConfig, repo
-    try {
-      gitConfig = ini.decode(readFileSync('./.git/config', 'utf8'))
-      repo = gitConfig['remote "origin"'].url
-    } catch (e) {
-      return callback(e)
-    }
-    if (!repo) return callback(new Error('No repository found.'))
-    pkg.repository = { type: 'git', url: `${ghUrl(repo)}.git` }
+async function getRemoteUrl ({repository}) {
+  if (!repository || !repository.url) {
+    const gitConfig = ini.decode(readFileSync('./.git/config', 'utf8'))
+    const repo = gitConfig['remote "origin"'].url
+    if (!repo) throw new Error('No repository found.')
+    repository = { type: 'git', url: `${ghUrl(repo)}.git` }
   }
 
-  let parsed = url.parse(pkg.repository.url)
+  let parsed = url.parse(repository.url)
   parsed.auth = null
   parsed.protocol = 'https'
-  pkg.repository.url = url.format(parsed)
+  repository.url = url.format(parsed)
 
-  callback(null, pkg.repository.url)
+  return repository.url
 }
 
-module.exports = function (pkg, info, cb) {
-  const log = info.log
+module.exports = async function (pkg, info) {
+  try {
+    var repoUrl = await getRemoteUrl(pkg)
+  } catch (e) {
+    log.error('Could not get repository url. Please create/add the repository.')
+    throw e
+  }
 
-  getRemoteUrl(pkg, (err, rurl) => {
-    if (err) {
-      log.error('Could not get repository url. Please create/add the repository.')
-      return cb(err)
-    }
+  log.verbose(`Detected git url: ${repoUrl}`)
+  info.giturl = repoUrl
+  const parsedUrl = parseGhUrl(repoUrl)
 
-    log.verbose(`Detected git url: ${rurl}`)
-    info.giturl = rurl
-    const parsedUrl = parseGhUrl(rurl)
+  if (!parsedUrl) {
+    log.info('Not a reqular GitHub URL.')
+    const eurl = url.parse(repoUrl)
+    delete eurl.pathname
+    delete eurl.search
+    delete eurl.query
+    delete eurl.hash
 
-    if (!parsedUrl) {
-      log.info('Not a reqular GitHub URL.')
-      let eurl = url.parse(rurl)
-      delete eurl.pathname
-      delete eurl.search
-      delete eurl.query
-      delete eurl.hash
-
-      inquirer.prompt([{
-        type: 'confirm',
-        name: 'enterprise',
-        message: 'Are you using GitHub Enterprise?',
-        default: true
-      }, {
-        type: 'input',
-        name: 'url',
-        message: 'What is your GitHub Enterprise url?',
-        default: url.format(eurl),
-        when: _.bind(_.get, null, _, 'enterprise'),
-        validate: _.bind(validator.isURL, null, _, {
-          protocols: [ 'http', 'https' ],
-          require_protocol: true
-        })
-      }], (answers) => {
-        if (answers.enterprise) {
-          info.ghepurl = answers.url
-        }
-
-        cb(null)
+    const answers = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'enterprise',
+      message: 'Are you using GitHub Enterprise?',
+      default: true
+    }, {
+      type: 'input',
+      name: 'url',
+      message: 'What is your GitHub Enterprise url?',
+      default: url.format(eurl),
+      when: _.bind(_.get, null, _, 'enterprise'),
+      validate: _.bind(validator.isURL, null, _, {
+        protocols: [ 'http', 'https' ],
+        require_protocol: true
       })
+    }])
+    info.ghepurl = answers.url
+    return
+  }
 
-      return
-    }
+  info.ghrepo = {slug: parsedUrl}
 
-    info.ghrepo = {slug: parsedUrl}
-
-    inquirer.prompt([{
+  try {
+    await request.head(repoUrl)
+  } catch (e) {
+    const answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'private',
       message: 'Is the GitHub repository private?',
       default: false
-    }], (answers) => {
-      _.assign(info.ghrepo, answers)
-      if (answers.private) {
-        return cb(null)
-      }
-
-      request.head(rurl, (err, res) => {
-        if (err || res.statusCode === 404) {
-          log.error('Could not find repository on GitHub. Please create and add the repository.')
-          return cb(err || new Error('GitHub repository not found.'))
-        }
-
-        cb(null)
-      })
-    })
-  })
+    }])
+    _.assign(info.ghrepo, answers)
+    if (answers.private) return
+    throw new Error('Could not access GitHub repository')
+  }
 }

@@ -8,7 +8,7 @@ const cis = {
   'Travis CI': travis.bind(null, 'https://api.travis-ci.org'),
   'Travis CI Pro': travis.bind(null, 'https://api.travis-ci.com'),
   'Travis CI Enterprise': travis,
-  'Other (prints tokens)': (pkg, info, cb) => {
+  'Other (prints tokens)': (pkg, info) => {
     const message = `
 ${_.repeat('-', 46)}
 GH_TOKEN=${info.github.token}
@@ -16,14 +16,13 @@ NPM_TOKEN=${info.npm.token}
 ${_.repeat('-', 46)}
 `
     console.log(message)
-    cb(null)
   }
 }
 
-module.exports = function (pkg, info, cb) {
-  const choices = Object.keys(cis)
+module.exports = async function (pkg, info) {
+  const choices = _.keys(cis)
 
-  inquirer.prompt([{
+  const answers = await inquirer.prompt([{
     type: 'list',
     name: 'ci',
     message: 'What CI are you using?',
@@ -37,12 +36,8 @@ module.exports = function (pkg, info, cb) {
       protocols: [ 'http', 'https' ],
       require_protocol: true
     }),
-    when: (ans) => ans.ci === choices[2]
-  }], (answers) => {
-    if (answers.endpoint) {
-      return cis[answers.ci](answers.endpoint, pkg, info, cb)
-    }
+    when: answers => answers.ci === choices[2]
+  }])
 
-    cis[answers.ci](pkg, info, cb)
-  })
+  await cis[answers.ci].apply(null, _.compact([answers.endpoint, pkg, info]))
 }
