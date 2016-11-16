@@ -6,7 +6,7 @@ module.exports = function (service) {
   } catch (e) {
     return {
       get: () => {},
-      set: () => log.warn('keytar is not installed correcty, not saving password')
+      set: () => log.warn('keytar is not installed correctly, not saving password')
     }
   }
 
