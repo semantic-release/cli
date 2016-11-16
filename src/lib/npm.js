@@ -1,99 +1,74 @@
+const url = require('url')
+
 const _ = require('lodash')
+const {promisify} = require('bluebird')
 const inquirer = require('inquirer')
-const npmconf = require('npmconf')
+const npm = require('npm')
 const RegClient = require('npm-registry-client')
 const validator = require('validator')
+const log = require('npmlog')
 
 const passwordStorage = require('./password-storage')('npm')
 
-function getNpmToken (pkg, info, cb) {
-  const log = info.log
-  const client = new RegClient({ log: log })
-  client.adduser(info.npm.registry, {
-    auth: info.npm
-  }, (err, data) => {
-    if (err) {
-      log.error('Could not login to npm registry. Check your credentials.')
-      return cb(err)
-    }
+async function getNpmToken ({npm, options}) {
+  const client = new RegClient({log})
 
-    if (info.options.keychain) {
-      passwordStorage.set(info.npm.username, info.npm.password)
-    }
-    info.npm.token = data.token
-    log.info('Successfully created npm token.')
-    cb(null)
-  })
+  const body = {
+    _id: `org.couchdb.user:${npm.username}`,
+    name: npm.username,
+    password: npm.password,
+    type: 'user',
+    roles: [],
+    date: new Date().toISOString()
+  }
+
+  const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username))
+  const {token} = await promisify(client.request.bind(client, uri))({method: 'PUT', body})
+
+  if (!token) throw new Error('Could not login to GitHub.')
+
+  if (options.keychain) {
+    passwordStorage.set(npm.username, npm.password)
+  }
+  npm.token = token
+  log.info('Successfully created npm token.')
 }
 
-module.exports = function (pkg, info, cb) {
-  const log = info.log
-
-  npmconf.load((err, conf) => {
-    if (err) {
-      log.error('Could not load npm config.')
-      return cb(err)
-    }
-
-    inquirer.prompt([{
-      type: 'input',
-      name: 'registry',
-      message: 'What is your npm registry?',
-      default: conf.get('registry'),
-      validate: _.bind(validator.isURL, null, _, {
-        protocols: [ 'http', 'https' ],
-        require_protocol: true
-      })
-    }, {
-      type: 'input',
-      name: 'username',
-      message: 'What is your npm username?',
-      default: conf.get('username'),
-      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
-      when: function (answers) {
-        return !_.has(info.options, 'npm-token')
-      }
-    }, {
-      type: 'input',
-      name: 'email',
-      message: 'What is your npm email?',
-      default: conf.get('email'),
-      validate: validator.isEmail,
-      when: function (answers) {
-        return !_.has(info.options, 'npm-token')
-      }
-    }, {
-      type: 'password',
-      name: 'password',
-      message: 'What is your npm password?',
-      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
-      when: function (answers) {
-        if (_.has(info.options, 'npm-token')) return false
-        if (!info.options.keychain) return true
-        if (info.options['ask-for-passwords']) return true
-        return !passwordStorage.get(answers.username)
-      }
-    }], (answers) => {
-      info.npm = answers
-
-      if (_.has(info.options, 'npm-token')) {
-        info.npm.token = info.options['npm-token']
-        log.info('Using NPM token from command line argument.')
-        return cb(null)
-      }
-
-      answers.password = answers.password || passwordStorage.get(answers.username)
-      conf.set('username', answers.username, 'user')
-      conf.set('email', answers.email, 'user')
-
-      conf.save('user', (err) => {
-        if (err) {
-          log.warn('Could not save npm config.')
-          log.verbose(err)
-        }
-
-        getNpmToken(pkg, info, cb)
-      })
+module.exports = async function (pkg, info) {
+  info.npm = await inquirer.prompt([{
+    type: 'input',
+    name: 'registry',
+    message: 'What is your npm registry?',
+    default: npm.config.get('registry'),
+    validate: _.bind(validator.isURL, null, _, {
+      protocols: [ 'http', 'https' ],
+      require_protocol: true
     })
-  })
+  }, {
+    type: 'input',
+    name: 'username',
+    message: 'What is your npm username?',
+    default: npm.config.get('username'),
+    validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+    when: () => !_.has(info.options, 'npm-token')
+  }, {
+    type: 'password',
+    name: 'password',
+    message: 'What is your npm password?',
+    validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+    when: answers => {
+      if (_.has(info.options, 'npm-token')) return false
+      return !info.options.keychain || info.options['ask-for-passwords'] || !passwordStorage.get(answers.username)
+    }
+  }])
+
+  if (_.has(info.options, 'npm-token')) {
+    info.npm.token = info.options['npm-token']
+    log.info('Using NPM token from command line argument.')
+    return
+  }
+
+  info.npm.password = info.npm.password || passwordStorage.get(info.npm.username)
+
+  await getNpmToken(info)
 }

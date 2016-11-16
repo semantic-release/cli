@@ -9,7 +9,7 @@ module.exports = function (level) {
     'http',
     'warn',
     'error'
-  ].forEach((level) => {
+  ].forEach(level => {
     log[level] = log[level].bind(log, 'semantic-release')
   })
 
