@@ -1,5 +1,6 @@
 {
   "name": "semantic-release-cli",
+  "version": "0.0.0-development",
   "description": "setup automated semver compliant package publishing",
   "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
   "babel": {

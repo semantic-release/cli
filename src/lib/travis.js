@@ -17,7 +17,7 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['6'],
+  node_js: ['7', '6', '4'],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
   branches: {
@@ -25,20 +25,6 @@ const travisyml = {
     except: [/^v\d+\.\d+\.\d+$/.toString()]
   }
 }
-
-const travisymlMulti = _.assign({}, travisyml, {
-  node_js: [
-    '4',
-    '6',
-    '7'
-  ],
-  after_success: [
-    'curl -Lo travis_after_all.py https://git.io/vXXtr',
-    'python travis_after_all.py',
-    'export $(cat .to_export_back) &> /dev/null',
-    'npm run semantic-release'
-  ]
-})
 
 async function isSyncing (travis) {
   try {
@@ -73,20 +59,14 @@ async function setEnvVar (travis, name, value) {
 }
 
 async function createTravisYml (info) {
-  const choices = [
-    'Single Node.js version.',
-    'Multiple Node.js versions.',
-    'Create no `.travis.yml`'
-  ]
   const answers = await inquirer.prompt([{
-    type: 'list',
+    type: 'confirm',
     name: 'yml',
-    message: 'What kind of `.travis.yml` do you want?',
-    choices
+    message: 'Do you want a `.travis.yml` file with semantic-release setup?',
+    default: true
   }])
-  const ans = choices.indexOf(answers.yml)
-  if (ans === 2) return
-  const tyml = yaml.safeDump(ans === 0 ? travisyml : travisymlMulti)
+  if (!answers.yml) return
+  const tyml = yaml.safeDump(travisyml)
   try {
     accessSync('.travis.yml')
     const {ok} = await inquirer.prompt([{

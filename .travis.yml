@@ -5,18 +5,13 @@ cache:
 notifications:
   email: false
 node_js:
-  - '4'
-  - '6'
   - '7'
-before_install:
-  - npm update -g npm
+  - '6'
+  - '4'
 before_script:
   - npm prune
 after_success:
-  - 'curl -Lo travis_after_all.py https://git.io/vXXtr'
-  - python travis_after_all.py
-  - export $(cat .to_export_back) &> /dev/null
   - npm run semantic-release
 branches:
   except:
-    - /^v\d+\.\d+\.\d+$/
+    - "/^v\\d+\\.\\d+\\.\\d+$/"
