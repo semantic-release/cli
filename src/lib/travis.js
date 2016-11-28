@@ -88,10 +88,11 @@ async function setUpTravis (pkg, info) {
   log.info('Syncing repositories...')
   await syncTravis(travis)
 
-  const {repo} = await promisify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))()
-  travis.repoid = repo.id
+  travis.repoid = _.get(await promisify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))(), 'repo.id')
 
-  const {result} = await promisify(travis.hooks(repo.id).put.bind(travis))({
+  if (!travis.repoid) throw new Error('Could not get repo id')
+
+  const {result} = await promisify(travis.hooks(travis.repoid).put.bind(travis))({
     hook: {active: true}
   })
   if (!result) throw new Error('Could not enable hook on Travis CI')
