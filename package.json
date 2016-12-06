@@ -22,7 +22,7 @@
     "bluebird": "^3.4.6",
     "github-url-from-git": "^1.4.0",
     "ini": "^1.3.4",
-    "inquirer": "^1.2.2",
+    "inquirer": "^2.0.0",
     "js-yaml": "^3.3.1",
     "lodash": "^4.16.4",
     "nopt": "^3.0.2",
