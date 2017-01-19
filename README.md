@@ -54,7 +54,7 @@ __semantic-release-cli performs the following steps:__
 	* Parses the npm token from the `.npmrc` for future use
 1. Create GitHub Personal Token
 	* Logs into GitHub using the username and password provided
-	* Creates a [GitHub Personal Access Token](https://github.com/settings/tokens) and saves it for future use
+	* Creates (and saves for later use) a [GitHub Personal Access Token](https://github.com/settings/tokens) with the following permissions: *repo, read:org, repo:status, repo_deployment, user:email, write:repo_hook*
 1. Overwrite your .travis.yml file (if Travis CI was selected)
 	* `before_install: npm i -g npm@^2.0.0`: install npm 2
 	* `before_script: curl -Lo travis_after_all.py https://git.io/vLSON`: install [travis-after-all](https://github.com/travis-ci/travis-ci/issues/929) script to enable running `semantic-release` after ALL build succeed
