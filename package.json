@@ -27,7 +27,7 @@
     "lodash": "^4.16.4",
     "nopt": "^4.0.0",
     "npm": "^4.0.3",
-    "npm-registry-client": "^7.3.0",
+    "npm-registry-client": "^8.0.0",
     "npmlog": "^4.0.0",
     "parse-github-repo-url": "^1.0.0",
     "request": "^2.58.0",
