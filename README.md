@@ -22,11 +22,13 @@ semantic-release-cli setup
 	  semantic-release-cli setup [options]
 
 	Options:
-	  -h --help           Show this screen.
-	  -v --version        Show version.
-	  --[no-]keychain     Use keychain to get passwords [default: true].
-	  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
-	  --tag=<String>      npm tag to install [default: 'latest'].
+	  -h --help            Show this screen.
+	  -v --version         Show version.
+	  --[no-]keychain      Use keychain to get passwords [default: true].
+	  --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
+	  --tag=<String>       npm tag to install [default: 'latest'].
+	  --gh-token=<String>  Github auth token
+	  --npm-token=<String> NPM auth token
 
 	Aliases:
 	  init                 setup
