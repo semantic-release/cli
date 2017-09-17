@@ -81,7 +81,7 @@ module.exports = async function (pkg, info) {
     type: 'input',
     name: 'username',
     message: 'What is your GitHub username?',
-    default: npm.config.get('username'),
+    default: info.options['gh-username'] || npm.config.get('username'),
     validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
   }, {
     type: 'password',

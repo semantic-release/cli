@@ -25,7 +25,9 @@ const knownOptions = {
   keychain: Boolean,
   'ask-for-passwords': Boolean,
   'gh-token': String,
-  'npm-token': String
+  'npm-token': String,
+  'gh-username': String,
+  'npm-username': String,
 }
 
 const shortHands = {
@@ -62,8 +64,10 @@ Options:
   --[no-]keychain      Use keychain to get passwords [default: true].
   --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
   --tag=<String>       npm tag to install [default: 'latest'].
-  --gh-token=<String>  Github auth token
-  --npm-token=<String> NPM auth token
+  --gh-token=<String>  GitHub auth token
+  --npm-token=<String> npm auth token
+  --gh-username=<String>  GitHub username
+  --npm-username=<String>  npm username
 
 Aliases:
   init                 setup`)
