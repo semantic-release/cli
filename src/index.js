@@ -63,7 +63,7 @@ Options:
   --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
   --tag=<String>       npm tag to install [default: 'latest'].
   --gh-token=<String>  Github auth token
-  --npm-token=<String> NPM auth token
+  --npm-token=<String> npm auth token
 
 Aliases:
   init                 setup`)
