@@ -7,7 +7,8 @@ const npm = require('npm')
 const request = require('request-promise').defaults({resolveWithFullResponse: true})
 const validator = require('validator')
 const log = require('npmlog')
-
+const gitConfigPath = require('git-config-path')('global')
+const parse = require('parse-git-config')
 const passwordStorage = require('./password-storage')('github')
 
 async function ask2FA () {
@@ -77,11 +78,13 @@ module.exports = async function (pkg, info) {
     return
   }
 
+  const githubUserFromGitConfig = (parse.sync({path: gitConfigPath}).github) ? parse.sync({path: gitConfigPath}).github.user : null
+
   const answers = await inquirer.prompt([{
     type: 'input',
     name: 'username',
     message: 'What is your GitHub username?',
-    default: info.options['gh-username'] || npm.config.get('username'),
+    default: info.options['gh-username'] || githubUserFromGitConfig || npm.config.get('username'),
     validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1)
   }, {
     type: 'password',
