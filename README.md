@@ -71,6 +71,12 @@ By default, `semantic-release-cli` supports the popular Travis CI server. If you
 
 Note that your CI server will also need to set the environment variable `CI=true` so that `semantic-release` will not perform a dry run. (Most CI services do this by default.) See the `semantic-release` documentation for more details.
 
+## Contribute
+
+Please contribute! We welcome issues and pull requests.
+
+When committing, please conform to the semantic-release commit standards. 
+
 ## License
 
 MIT License
