@@ -71,6 +71,10 @@ By default, `semantic-release-cli` supports the popular Travis CI server. If you
 
 Note that your CI server will also need to set the environment variable `CI=true` so that `semantic-release` will not perform a dry run. (Most CI services do this by default.) See the `semantic-release` documentation for more details.
 
+## Setting defaults
+
+This package reads from your global `.npmrc`. In order to autosuggest a username in the future, make sure to set your username there: `npm config set username <username>`.
+
 ## License
 
 MIT License
