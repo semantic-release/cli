@@ -28,7 +28,7 @@ semantic-release-cli setup
 	  --ask-for-passwords Ask for the passwords even if passwords are stored [default: false].
 	  --tag=<String>      npm tag to install [default: 'latest'].
     --gh-token=<String>  GitHub auth token
-    --npm-token=<String> npm auth
+    --npm-token=<String> npm auth token
     --gh-username=<String>  GitHub username
     --npm-username=<String>  npm username
 
