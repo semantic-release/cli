@@ -27,7 +27,7 @@ const knownOptions = {
   'gh-token': String,
   'npm-token': String,
   'gh-username': String,
-  'npm-username': String,
+  'npm-username': String
 }
 
 const shortHands = {
