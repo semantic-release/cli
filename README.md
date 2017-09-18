@@ -77,7 +77,9 @@ Note that your CI server will also need to set the environment variable `CI=true
 
 ## Setting defaults
 
-This package reads from your global `.npmrc`. In order to autosuggest a username in the future, make sure to set your username there: `npm config set username <username>`.
+This package reads your npm username from your global `.npmrc`. In order to autosuggest a username in the future, make sure to set your username there: `npm config set username <username>`.
+
+It also reads your GitHub username from your global `.gitconfig`. In order to autosuggest a username in the future, run `git config --global --add github.username <username>`. If a name isn't defined here, it will default to using your npm username, as it will assume they are identical.
 
 ## Contribute
 
