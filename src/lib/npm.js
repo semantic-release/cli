@@ -48,7 +48,7 @@ module.exports = async function (pkg, info) {
     type: 'input',
     name: 'username',
     message: 'What is your npm username?',
-    default: npm.config.get('username'),
+    default: info.options['npm-username'] || npm.config.get('username'),
     validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
     when: () => !_.has(info.options, 'npm-token')
   }, {
