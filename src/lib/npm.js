@@ -64,7 +64,7 @@ module.exports = async function (pkg, info) {
 
   if (_.has(info.options, 'npm-token')) {
     info.npm.token = info.options['npm-token']
-    log.info('Using NPM token from command line argument.')
+    log.info('Using npm token from command line argument.')
     return
   }
 
