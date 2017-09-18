@@ -75,7 +75,7 @@ Note that your CI server will also need to set the environment variable `CI=true
 
 Please contribute! We welcome issues and pull requests.
 
-When committing, please conform to the semantic-release commit standards. 
+When committing, please conform to [the semantic-release commit standards](https://github.com/semantic-release/semantic-release#default-commit-message-format). 
 
 ## License
 
