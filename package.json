@@ -37,7 +37,7 @@
     "travis-ci": "^2.1.1",
     "update-notifier": "^1.0.2",
     "user-home": "^2.0.0",
-    "validator": "^6.1.0"
+    "validator": "^7.0.0"
   },
   "optionalDependencies": {
     "keytar": "^4.0.4"
