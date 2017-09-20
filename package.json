@@ -40,7 +40,7 @@
     "validator": "^6.1.0"
   },
   "optionalDependencies": {
-    "keytar": "^3.0.0"
+    "keytar": "^4.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
