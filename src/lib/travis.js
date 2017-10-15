@@ -17,7 +17,7 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['7', '6', '4'],
+  node_js: ['8', '6'],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
   branches: {
