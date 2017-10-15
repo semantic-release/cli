@@ -53,7 +53,7 @@ module.exports = async function (argv) {
 
   if ((info.options.argv.remain[0] !== 'setup' && info.options.argv.remain[0] !== 'init') || info.options.help) {
     console.log(`
-semantic-release-cli
+semantic-release-cli (v${ownPkg.version})
 
 Usage:
   semantic-release-cli setup [--tag=<String>]
