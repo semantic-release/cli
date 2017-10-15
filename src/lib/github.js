@@ -60,7 +60,7 @@ async function createAuthorization (info) {
       const code = await ask2FA()
       info.github.code = code
       info.github.retry = true
-      return await createAuthorization(info)
+      return createAuthorization(info)
     }
     throw e
   }
