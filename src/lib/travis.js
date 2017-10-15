@@ -12,7 +12,8 @@ const log = require('npmlog')
 const travisyml = {
   language: 'node_js',
   cache: {
-    directories: ['node_modules']
+    // https://twitter.com/maybekatz/status/905213355748720640
+    directories: ['~/.npm']
   },
   notifications: {
     email: false
