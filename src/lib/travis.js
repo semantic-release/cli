@@ -17,7 +17,12 @@ const travisyml = {
   notifications: {
     email: false
   },
-  node_js: ['7', '6', '4'],
+  node_js: [
+    // https://github.com/nodejs/Release#release-schedule1
+    '8',
+    '6',
+    '4'
+  ],
   before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
   branches: {
