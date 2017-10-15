@@ -91,10 +91,13 @@ module.exports = async function (pkg, info) {
     name: 'password',
     message: 'What is your GitHub password?',
     validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
-    when: answers => !info.options.keychain || info.options['ask-for-passwords'] || !passwordStorage.get(answers.username)
+    when: async answers => {
+      const storedPassword = await passwordStorage.get(answers.username)
+      return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword
+    }
   }])
 
-  answers.password = answers.password || passwordStorage.get(answers.username)
+  answers.password = answers.password || await passwordStorage.get(answers.username)
 
   info.github = answers
   info.github.endpoint = info.ghepurl || 'https://api.github.com'

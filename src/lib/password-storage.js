@@ -13,6 +13,6 @@ module.exports = function (service) {
   const key = `semantic-release-cli:${service}`
   return {
     get: username => keytar.getPassword(key, username),
-    set: (username, password) => keytar.replacePassword(key, username, password)
+    set: (username, password) => keytar.setPassword(key, username, password)
   }
 }

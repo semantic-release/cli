@@ -56,9 +56,10 @@ module.exports = async function (pkg, info) {
     name: 'password',
     message: 'What is your npm password?',
     validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
-    when: answers => {
+    when: async answers => {
       if (_.has(info.options, 'npm-token')) return false
-      return !info.options.keychain || info.options['ask-for-passwords'] || !passwordStorage.get(answers.username)
+      const storedPassword = await passwordStorage.get(answers.username)
+      return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword
     }
   }])
 
@@ -68,7 +69,11 @@ module.exports = async function (pkg, info) {
     return
   }
 
-  info.npm.password = info.npm.password || passwordStorage.get(info.npm.username)
+  const storedPassword = await passwordStorage.get(info.npm.username)
+  console.log(`\nstoredPassword ==============================`)
+  console.log(storedPassword)
+
+  info.npm.password = info.npm.password || storedPassword
 
   await getNpmToken(info)
 }
