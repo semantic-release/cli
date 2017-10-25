@@ -70,8 +70,6 @@ module.exports = async function (pkg, info) {
   }
 
   const storedPassword = await passwordStorage.get(info.npm.username)
-  console.log(`\nstoredPassword ==============================`)
-  console.log(storedPassword)
 
   info.npm.password = info.npm.password || storedPassword
 
