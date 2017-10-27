@@ -1,7 +1,7 @@
 {
   "name": "semantic-release-cli",
-  "version": "0.0.0-development",
   "description": "setup automated semver compliant package publishing",
+  "version": "0.0.0-development",
   "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
   "babel": {
     "presets": [
@@ -51,22 +51,39 @@
     "user-home": "^2.0.0",
     "validator": "^9.0.0"
   },
-  "optionalDependencies": {
-    "keytar": "^4.0.4"
-  },
   "devDependencies": {
-    "mkdirp": "^0.5.1",
+    "ava": "^0.23.0",
+    "codecov": "^3.0.0",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.0.0",
+    "eslint": "^4.9.0",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-prettier": "^2.3.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
     "nyc": "^11.2.1",
+    "prettier": "^1.7.2",
     "rimraf": "^2.4.2",
-    "semantic-release": "^8.0.0",
-    "standard": "^10.0.3",
-    "tap": "^10.0.0"
+    "semantic-release": "^8.0.0"
   },
   "engines": {
     "node": ">=4",
     "npm": ">=3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "standard",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": 2
+    }
   },
   "files": [
     "bin",
@@ -86,7 +103,16 @@
   ],
   "license": "MIT",
   "main": "src/index.js",
+  "optionalDependencies": {
+    "keytar": "^4.0.4"
+  },
   "preferGlobal": true,
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "trailingComma": "es5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/semantic-release/cli.git"
@@ -94,8 +120,10 @@
   "scripts": {
     "coverage": "nyc report",
     "coverage:upload": "npm run coverage -- --reporter=lcovonly && coveralls < coverage/lcov.info",
-    "prepublish": "npm run build",
+    "clean": "rimraf coverage && rimraf .nyc_output",
     "cm": "git-cz",
+    "lint": "eslint .",
+    "pretest": "npm run clean && npm run lint",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "npm run test:style && npm run test:unit",
     "test:style": "standard",
