@@ -1,18 +1,18 @@
-const log = require('npmlog')
+const log = require('npmlog');
 
-module.exports = function (service) {
+module.exports = function(service) {
   try {
-    var keytar = require('keytar')
+    var keytar = require('keytar');
   } catch (e) {
     return {
       get: () => {},
-      set: () => log.warn('keytar is not installed correctly, not saving password')
-    }
+      set: () => log.warn('keytar is not installed correctly, not saving password'),
+    };
   }
 
-  const key = `semantic-release-cli:${service}`
+  const key = `semantic-release-cli:${service}`;
   return {
     get: username => keytar.getPassword(key, username),
-    set: (username, password) => keytar.setPassword(key, username, password)
-  }
-}
+    set: (username, password) => keytar.setPassword(key, username, password),
+  };
+};
