@@ -18,4 +18,5 @@ install:
   - travis_retry npm install
 
 after_success:
+  - npm run codecov
   - npm run semantic-release
