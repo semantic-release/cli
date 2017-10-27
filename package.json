@@ -64,6 +64,10 @@
     "node": ">=4",
     "npm": ">=3"
   },
+  "files": [
+    "bin",
+    "src"
+  ],
   "homepage": "https://github.com/semantic-release/cli",
   "keywords": [
     "author",
