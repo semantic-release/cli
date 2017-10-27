@@ -60,12 +60,12 @@ module.exports = async function (pkg, info) {
       if (_.has(info.options, 'npm-token')) return false
       try {
         const storedPassword = await passwordStorage.get(answers.username)
+        return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword
       } catch (err) {
-        log.error('It seems something went wrong with your credentials stored in your keychain.');
-        log.error('At it\'s best you delete the "semantic-release" keychains and retry it.');
-        log.error('The keychain names are "semantic-release-cli:npm" and "semantic-release-cli:github"');
+        log.error('It seems something went wrong with your credentials stored in your keychain.')
+        log.error('At it\'s best you delete the "semantic-release" keychains and retry it.')
+        log.error('The keychain names are "semantic-release-cli:npm" and "semantic-release-cli:github"')
       }
-      return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword
     }
   }])
 
