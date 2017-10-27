@@ -3,6 +3,12 @@
   "description": "setup automated semver compliant package publishing",
   "version": "0.0.0-development",
   "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
+  "ava": {
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ]
+  },
   "babel": {
     "presets": [
       [
@@ -103,6 +109,17 @@
   ],
   "license": "MIT",
   "main": "src/index.js",
+  "nyc": {
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "json",
+      "text",
+      "html"
+    ],
+    "all": true
+  },
   "optionalDependencies": {
     "keytar": "^4.0.4"
   },
@@ -118,15 +135,12 @@
     "url": "https://github.com/semantic-release/cli.git"
   },
   "scripts": {
-    "coverage": "nyc report",
-    "coverage:upload": "npm run coverage -- --reporter=lcovonly && coveralls < coverage/lcov.info",
     "clean": "rimraf coverage && rimraf .nyc_output",
     "cm": "git-cz",
+    "codecov": "codecov -f coverage/coverage-final.json",
     "lint": "eslint .",
     "pretest": "npm run clean && npm run lint",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "test": "npm run test:style && npm run test:unit",
-    "test:style": "standard",
-    "test:unit": "nyc tap --no-cov test/specs/*.js"
+    "test": "nyc ava -v"
   }
 }
