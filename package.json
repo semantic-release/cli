@@ -17,6 +17,11 @@
   "bugs": {
     "url": "https://github.com/semantic-release/cli/issues"
   },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
   "dependencies": {
     "base32": "0.0.6",
     "bluebird": "^3.4.6",
@@ -47,6 +52,8 @@
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-preset-es2015-node4": "^2.1.0",
     "mkdirp": "^0.5.1",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.0.0",
     "nyc": "^11.2.1",
     "rimraf": "^2.4.2",
     "semantic-release": "^8.0.0",
@@ -81,6 +88,7 @@
     "coverage": "nyc report",
     "coverage:upload": "npm run coverage -- --reporter=lcovonly && coveralls < coverage/lcov.info",
     "prepublish": "npm run build",
+    "cm": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "npm run test:style && npm run test:unit",
     "test:style": "standard",
