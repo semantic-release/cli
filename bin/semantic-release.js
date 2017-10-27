@@ -1,13 +1,7 @@
 #!/usr/bin/env node
+require('babel-register');
+require('babel-polyfill');
 
-/* istanbul ignore next */
-try {
-  require('../dist')(process.argv)
-} catch (err) {
-  if (err.code === 'MODULE_NOT_FOUND') {
-    require('babel-register')
-    require('../src')(process.argv)
-  } else {
-    console.log(err)
-  }
-}
+require('../src')().catch(() => {
+  process.exitCode = 1;
+});
