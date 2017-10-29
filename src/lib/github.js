@@ -88,12 +88,10 @@ module.exports = async function(pkg, info) {
       validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
       when: async answers => {
         try {
-          const storedPassword = await passwordStorage.get(answers.username)
-          return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword
+          const storedPassword = await passwordStorage.get(answers.username);
+          return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
         } catch (err) {
-          log.error('It seems something went wrong with your credentials stored in your keychain.')
-          log.error('At it\'s best you delete the "semantic-release" keychains and retry it.')
-          log.error('The keychain names are "semantic-release-cli:npm" and "semantic-release-cli:github"')
+          log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
         }
       },
     },
