@@ -58,8 +58,12 @@ module.exports = async function(pkg, info) {
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
       when: async answers => {
         if (_.has(info.options, 'npm-token')) return false;
-        const storedPassword = await passwordStorage.get(answers.username);
-        return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
+        try {
+          const storedPassword = await passwordStorage.get(answers.username);
+          return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
+        } catch (err) {
+          log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
+        }
       },
     },
   ]);
