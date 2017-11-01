@@ -19,7 +19,8 @@ const travisyml = {
     email: false,
   },
   node_js: [
-    // https://github.com/nodejs/Release#release-schedule1
+    // https://github.com/nodejs/Release#release-schedule
+    '9',
     '8',
     '6',
     '4',
