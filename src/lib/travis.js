@@ -24,7 +24,6 @@ const travisyml = {
     '6',
     '4',
   ],
-  before_script: ['npm prune'],
   after_success: ['npm run semantic-release'],
   branches: {
     // ignore git tags created by semantic-release, like "v1.2.3"
