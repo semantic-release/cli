@@ -1,4 +1,6 @@
 # semantic-release-cli
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/semantic-release/cli.svg)](https://greenkeeper.io/)
 | [![Build Status](https://travis-ci.org/semantic-release/cli.svg?branch=master)](https://travis-ci.org/semantic-release/cli) | [![Coverage Status](https://coveralls.io/repos/semantic-release/cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/semantic-release/cli?branch=master) | [![Dependency Status](https://david-dm.org/semantic-release/cli/master.svg)](https://david-dm.org/semantic-release/cli/master) | [![devDependency Status](https://david-dm.org/semantic-release/cli/master/dev-status.svg)](https://david-dm.org/semantic-release/cli/master#info=devDependencies) | [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier) |
 | --- | --- | --- | --- | --- |
 
