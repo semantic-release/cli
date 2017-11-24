@@ -30,7 +30,7 @@ async function createAuthorization(info) {
   const node = (reponame ? `-${reponame}-` : '-') + randomId();
 
   try {
-    var response = await request({
+    const response = await request({
       method: 'POST',
       url: `${info.github.endpoint}/authorizations`,
       json: true,
@@ -41,9 +41,10 @@ async function createAuthorization(info) {
         note: `semantic-release${node}`,
       },
     });
-  } catch (e) {
-    if (e.statusCode === 401 && e.response.headers['x-github-otp']) {
-      const type = e.response.headers['x-github-otp'].split('; ')[1];
+    if (response.statusCode === 201) return response.body.token;
+  } catch (err) {
+    if (err.statusCode === 401 && err.response.headers['x-github-otp']) {
+      const type = err.response.headers['x-github-otp'].split('; ')[1];
 
       if (info.github.retry) log.warn('Invalid two-factor authentication code.');
       else log.info(`Two-factor authentication code needed via ${type}.`);
@@ -53,10 +54,8 @@ async function createAuthorization(info) {
       info.github.retry = true;
       return createAuthorization(info);
     }
-    throw e;
+    throw err;
   }
-
-  if (response.statusCode === 201) return response.body.token;
 }
 
 module.exports = async function(pkg, info) {

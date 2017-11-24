@@ -4,9 +4,10 @@ const {promisify} = require('bluebird');
 const nopt = require('nopt');
 const npm = require('npm');
 const request = require('request-promise').defaults({json: true});
-const getLog = require('./lib/log');
 const ownPkg = require('../package.json');
-let pkg = JSON.parse(readFileSync('./package.json'));
+const getLog = require('./lib/log');
+
+const pkg = JSON.parse(readFileSync('./package.json'));
 
 require('update-notifier')({
   pkg: _.defaults(ownPkg, {version: '0.0.0'}),
@@ -30,7 +31,7 @@ const shortHands = {
 };
 
 module.exports = async function(argv) {
-  let info = {
+  const info = {
     options: _.defaults(nopt(knownOptions, shortHands, argv, 2), {
       keychain: true,
       tag: 'latest',
@@ -39,7 +40,7 @@ module.exports = async function(argv) {
 
   if (info.options.version) {
     console.log(ownPkg.version || 'development');
-    process.exit(0);
+    return;
   }
 
   if ((info.options.argv.remain[0] !== 'setup' && info.options.argv.remain[0] !== 'init') || info.options.help) {
@@ -62,18 +63,21 @@ Options:
 
 Aliases:
   init                 setup`);
-    process.exit(0);
+    return;
   }
 
+  let config;
   try {
-    var config = (await promisify(npm.load.bind(npm))({progress: false})).config;
-  } catch (e) {
-    console.log('Failed to load npm config.', e);
-    process.exit(1);
+    config = (await promisify(npm.load.bind(npm))({progress: false})).config;
+  } catch (err) {
+    console.log('Failed to load npm config.', err);
+    process.exitCode = 1;
+    return;
   }
 
   info.loglevel = config.get('loglevel') || 'warn';
-  const log = (info.log = getLog(info.loglevel));
+  const log = getLog(info.loglevel);
+  info.log = log;
 
   try {
     await require('./lib/repository')(pkg, info);
@@ -82,7 +86,7 @@ Aliases:
     await require('./lib/ci')(pkg, info);
   } catch (err) {
     log.error(err);
-    process.exit(1);
+    process.exitCode = 1;
   }
 
   pkg.version = '0.0.0-development';
@@ -100,8 +104,8 @@ Aliases:
     const {'dist-tags': distTags} = await request('https://registry.npmjs.org/semantic-release');
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies['semantic-release'] = `^${distTags[info.options.tag]}`;
-  } catch (e) {
-    log.error('Could not get latest `semantic-release` version.', e);
+  } catch (err) {
+    log.error('Could not get latest `semantic-release` version.', err);
   }
 
   log.verbose('Writing `package.json`.');

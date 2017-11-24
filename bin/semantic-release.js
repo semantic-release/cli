@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-require('babel-register')({only: 'semantic-release-cli/src'});
+/* eslint-disable import/no-unassigned-import */
+require('babel-register');
 require('babel-polyfill');
 
 require('../src')().catch(() => {

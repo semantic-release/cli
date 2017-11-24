@@ -18,14 +18,9 @@ const travisyml = {
   notifications: {
     email: false,
   },
-  node_js: [
-    // https://github.com/nodejs/Release#release-schedule
-    '9',
-    '8',
-    '6',
-    '4',
-  ],
-  after_success: ['npm run semantic-release'],
+  // https://github.com/nodejs/Release#release-schedule
+  node_js: ['9', '8', '6', '4'], // eslint-disable-line camelcase
+  after_success: ['npm run semantic-release'], // eslint-disable-line camelcase
   branches: {
     // ignore git tags created by semantic-release, like "v1.2.3"
     except: [/^v\d+\.\d+\.\d+$/.toString()],
@@ -34,21 +29,23 @@ const travisyml = {
 
 async function isSyncing(travis) {
   try {
-    var res = await promisify(travis.users.get.bind(travis))();
+    const res = await promisify(travis.users.get.bind(travis))();
     return _.get(res, 'user.is_syncing');
-  } catch (e) {}
+  } catch (err) {}
 }
 
 async function syncTravis(travis) {
   try {
     await promisify(travis.users.sync.post.bind(travis))();
-  } catch (e) {
-    if (e.message !== 'Sync already in progress. Try again later.') throw e;
+  } catch (err) {
+    if (err.message !== 'Sync already in progress. Try again later.') throw err;
   }
 
+  /* eslint-disable no-await-in-loop */
   while (await isSyncing(travis)) {
     await delay(1000);
   }
+  /* eslint-enable no-await-in-loop */
 }
 
 async function setEnvVar(travis, name, value) {
@@ -63,11 +60,11 @@ async function setEnvVar(travis, name, value) {
   await await promisify(tagent.request.bind(tagent))(
     envid ? 'PATCH' : 'POST',
     `/settings/env_vars${envid}?repository_id=${travis.repoid}`,
-    {env_var: {name, value, public: false}}
+    {env_var: {name, value, public: false}} // eslint-disable-line camelcase
   );
 }
 
-async function createTravisYml(info) {
+async function createTravisYml() {
   const answers = await inquirer.prompt([
     {
       type: 'confirm',
@@ -89,7 +86,7 @@ async function createTravisYml(info) {
       },
     ]);
     if (!ok) return;
-  } catch (e) {}
+  } catch (err) {}
   log.verbose('Writing `.travis.yml`.');
   writeFileSync('.travis.yml', tyml);
   log.info('Successfully created `.travis.yml`.');
@@ -122,25 +119,27 @@ async function setUpTravis(pkg, info) {
 
 module.exports = async function(endpoint, pkg, info) {
   const travisPath = join(home, '.travis/config.yml');
+  let token;
 
   try {
     const travisConfig = yaml.safeLoad(readFileSync(travisPath, 'utf8'));
-    var token = travisConfig.endpoints[`${endpoint}/`].access_token;
-  } catch (e) {
+    token = travisConfig.endpoints[`${endpoint}/`].access_token;
+  } catch (err) {
     log.info('Could not load Travis CI config for endpoint.');
   }
 
-  const travis = (info.travis = new Travis({
+  const travis = new Travis({
     version: '2.0.0',
     headers: {
       // Won't work with a different user-agent ¯\_(ツ)_/¯
       'User-Agent': 'Travis',
     },
-  }));
+  });
+  info.travis = travis;
   travis.agent._endpoint = endpoint;
 
   if (token) travis.agent.setAccessToken(token);
-  else await promisify(travis.authenticate.bind(travis))({github_token: info.github.token});
+  else await promisify(travis.authenticate.bind(travis))({github_token: info.github.token}); // eslint-disable-line camelcase
 
   await setUpTravis(pkg, info);
 };
