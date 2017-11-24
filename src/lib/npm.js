@@ -41,7 +41,7 @@ module.exports = async function(pkg, info) {
       name: 'registry',
       message: 'What is your npm registry?',
       default: npm.config.get('registry'),
-      validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}),
+      validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}), // eslint-disable-line camelcase
     },
     {
       type: 'input',

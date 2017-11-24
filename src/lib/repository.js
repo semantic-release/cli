@@ -17,7 +17,7 @@ async function getRemoteUrl({repository}) {
     repository = {type: 'git', url: `${ghUrl(repo)}.git`};
   }
 
-  let parsed = url.parse(repository.url);
+  const parsed = url.parse(repository.url);
   parsed.auth = null;
   parsed.protocol = 'https';
   repository.url = url.format(parsed);
@@ -26,11 +26,12 @@ async function getRemoteUrl({repository}) {
 }
 
 module.exports = async function(pkg, info) {
+  let repoUrl;
   try {
-    var repoUrl = await getRemoteUrl(pkg);
-  } catch (e) {
+    repoUrl = await getRemoteUrl(pkg);
+  } catch (err) {
     log.error('Could not get repository url. Please create/add the repository.');
-    throw e;
+    throw err;
   }
 
   log.verbose(`Detected git url: ${repoUrl}`);
@@ -58,7 +59,7 @@ module.exports = async function(pkg, info) {
         message: 'What is your GitHub Enterprise url?',
         default: url.format(eurl),
         when: _.bind(_.get, null, _, 'enterprise'),
-        validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}),
+        validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}), // eslint-disable-line camelcase
       },
     ]);
     info.ghepurl = answers.url;
@@ -69,7 +70,7 @@ module.exports = async function(pkg, info) {
 
   try {
     await request.head(repoUrl);
-  } catch (e) {
+  } catch (err) {
     const answers = await inquirer.prompt([
       {
         type: 'confirm',

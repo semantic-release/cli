@@ -33,7 +33,7 @@ module.exports = async function(pkg, info) {
       type: 'input',
       name: 'endpoint',
       message: 'What is your Travis CI enterprise url?',
-      validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}),
+      validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}), // eslint-disable-line camelcase
       when: answers => answers.ci === choices[2],
     },
   ]);
