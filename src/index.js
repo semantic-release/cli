@@ -92,7 +92,7 @@ Aliases:
   pkg.version = '0.0.0-development';
 
   pkg.scripts = pkg.scripts || {};
-  pkg.scripts['semantic-release'] = 'semantic-release pre && npm publish && semantic-release post';
+  pkg.scripts['semantic-release'] = 'semantic-release';
 
   pkg.repository = pkg.repository || {type: 'git', url: info.giturl};
 
