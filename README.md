@@ -61,7 +61,7 @@ __semantic-release-cli performs the following steps:__
 	* Set other sane defaults: `sudo: false`, `cache: directories: node_modules`, `notifications: email: false`, `before_script: npm prune`
 1. Update your package.json
 	* Remove `version` field (you don't need it anymore -- `semantic-release` will set the version for you automatically)
-	* Add a `semantic-release` script: `"semantic-release": "semantic-release pre && npm publish && semantic-release post"`
+	* Add a `semantic-release` script: `"semantic-release": "semantic-release"`
 	* Add `semantic-release` as a `devDependency`
 	* Add or overwrite the [`repository` field](https://docs.npmjs.com/files/package.json#repository)
 1. Login to Travis CI to configure the package
