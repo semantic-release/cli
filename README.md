@@ -46,7 +46,7 @@ __semantic-release-cli performs the following steps:__
 	* Your GitHub username
 	* Your GitHub password (unless passwords were previously saved to keychain)
 	* Which continuous integration system you want to use. (Options: Travis CI / Pro / Enterprise, or Other)
-	* Whether you want to test a single node.js version (e.g. - 0.12) or multiple node.js versions (e.g. - 0.10, 0.12, etc.)
+	* Whether you want to test a single node.js version (e.g. - 8) or multiple node.js versions (e.g. - 4, 6, 8, etc.)
 1. Save your passwords to your local OS's keychain using [keytar](https://www.npmjs.com/package/keytar) for future use (unless `--no-keychain` was specified)
 1. npm Add User
 	* Runs `npm adduser` with the npm information provided to generate a `.npmrc`
@@ -55,12 +55,10 @@ __semantic-release-cli performs the following steps:__
 	* Logs into GitHub using the username and password provided
 	* Creates (and saves for later use) a [GitHub Personal Access Token](https://github.com/settings/tokens) with the following permissions: *repo, read:org, repo:status, repo_deployment, user:email, write:repo_hook*
 1. Overwrite your .travis.yml file (if Travis CI was selected)
-	* `before_install: npm i -g npm@^2.0.0`: install npm 2
-	* `before_script: curl -Lo travis_after_all.py https://git.io/vLSON`: install [travis-after-all](https://github.com/travis-ci/travis-ci/issues/929) script to enable running `semantic-release` after ALL build succeed
-	* `after_success: python travis_after_all.py` and `npm run semantic-release`: run `semantic-release` exactly once after all builds pass
-	* Set other sane defaults: `sudo: false`, `cache: directories: node_modules`, `notifications: email: false`, `before_script: npm prune`
-1. Update your package.json
-	* Remove `version` field (you don't need it anymore -- `semantic-release` will set the version for you automatically)
+	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
+	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
+1. Update your `package.json`
+	* Set `version` field to `0.0.0-development` (`semantic-release` will set the version for you automatically)
 	* Add a `semantic-release` script: `"semantic-release": "semantic-release"`
 	* Add `semantic-release` as a `devDependency`
 	* Add or overwrite the [`repository` field](https://docs.npmjs.com/files/package.json#repository)
