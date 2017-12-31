@@ -8,6 +8,7 @@ const inquirer = require('inquirer');
 const Travis = require('travis-ci');
 const yaml = require('js-yaml');
 const log = require('npmlog');
+const request = require('request-promise').defaults({json: true});
 
 const travisyml = {
   language: 'node_js',
@@ -20,7 +21,7 @@ const travisyml = {
   },
   // https://github.com/nodejs/Release#release-schedule
   node_js: ['9', '8', '6', '4'], // eslint-disable-line camelcase
-  after_success: ['npm install -g travis-deploy-once@4', 'travis-deploy-once "npm run semantic-release"'], // eslint-disable-line camelcase
+  after_success: ['npm run travis-deploy-once "npm run semantic-release"'], // eslint-disable-line camelcase
   branches: {
     // ignore git tags created by semantic-release, like "v1.2.3"
     except: [/^v\d+\.\d+\.\d+$/.toString()],
@@ -123,6 +124,19 @@ async function setUpTravis(pkg, info) {
 
   log.info('Successfully set environment variables on Travis CI.');
   await createTravisYml(info);
+
+  pkg.scripts['travis-deploy-once'] = 'travis-deploy-once';
+
+  try {
+    const {'dist-tags': distTags} = await request('https://registry.npmjs.org/travis-deploy-once');
+    pkg.devDependencies = pkg.devDependencies || {};
+    pkg.devDependencies['travis-deploy-once'] = `^${distTags[info.options.tag]}`;
+  } catch (err) {
+    log.error('Could not get latest `travis-deploy-once` version.', err);
+  }
+
+  log.verbose('Writing `package.json`.');
+  writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
 module.exports = async function(endpoint, pkg, info) {
