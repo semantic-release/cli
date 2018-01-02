@@ -2,11 +2,13 @@ const _ = require('lodash');
 const inquirer = require('inquirer');
 const validator = require('validator');
 const travis = require('./travis');
+const circle = require('./circle');
 
 const cis = {
   'Travis CI': travis.bind(null, 'https://api.travis-ci.org'),
   'Travis CI Pro': travis.bind(null, 'https://api.travis-ci.com'),
   'Travis CI Enterprise': travis,
+  'Circle CI': circle,
   'Other (prints tokens)': (pkg, info) => {
     const message = `
 ${_.repeat('-', 46)}

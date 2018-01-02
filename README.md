@@ -45,8 +45,8 @@ __semantic-release-cli performs the following steps:__
 	* Your npm password
 	* Your GitHub username
 	* Your GitHub password (unless passwords were previously saved to keychain)
-	* Which continuous integration system you want to use. (Options: Travis CI / Pro / Enterprise, or Other)
-	* Whether you want to test a single node.js version (e.g. - 8) or multiple node.js versions (e.g. - 4, 6, 8, etc.)
+	* Which continuous integration system you want to use. (Options: Travis CI / Pro / Enterprise / CircleCI, or Other)
+	* [Travis only] Whether you want to test a single node.js version (e.g. - 8) or multiple node.js versions (e.g. - 4, 6, 8, etc.)
 1. Save your passwords to your local OS's keychain using [keytar](https://www.npmjs.com/package/keytar) for future use (unless `--no-keychain` was specified)
 1. npm Add User
 	* Runs `npm adduser` with the npm information provided to generate a `.npmrc`
@@ -54,21 +54,47 @@ __semantic-release-cli performs the following steps:__
 1. Create GitHub Personal Token
 	* Logs into GitHub using the username and password provided
 	* Creates (and saves for later use) a [GitHub Personal Access Token](https://github.com/settings/tokens) with the following permissions: *repo, read:org, repo:status, repo_deployment, user:email, write:repo_hook*
-1. Overwrite your .travis.yml file (if Travis CI was selected)
-	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
-	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
 1. Update your `package.json`
 	* Set `version` field to `0.0.0-development` (`semantic-release` will set the version for you automatically)
 	* Add a `semantic-release` script: `"semantic-release": "semantic-release"`
 	* Add `semantic-release` as a `devDependency`
 	* Add or overwrite the [`repository` field](https://docs.npmjs.com/files/package.json#repository)
+
+## Travis CI
+For Travis CI, `semantic-release-cli` performs the following additional steps:
+1. Overwrite your .travis.yml file
+	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
+	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
 1. Login to Travis CI to configure the package
 	* Enable builds of your repo
-	* Add GH_TOKEN and NPM_TOKEN environment variables in the settings
+	* Add `GH_TOKEN` and `NPM_TOKEN` environment variables in the settings
+
+## CircleCI
+
+For CircleCI, `semantic-release-cli` performs the following additional steps:
+1. Create minimal config.yml file (if CircleCI was selected)
+```yml
+version: 2
+jobs:
+  build:
+    docker:
+      - image: 'circleci/node:latest'
+    steps:
+      - checkout
+      - run:
+        name: install
+        command: npm install
+      - run:
+        name: release
+        command: npm run semantic-release || true
+```
+2. Login to CircleCI to configure the package
+	* Enable builds of your repo
+	* Add `GH_TOKEN` and `NPM_TOKEN` environment variables in the settings
 
 ## Other CI Servers
 
-By default, `semantic-release-cli` supports the popular Travis CI server. If you select `Other` as your server during configuration, `semantic-release-cli` will print out the environment variables you need to set on your CI server. You will be responsible for adding these environment variables as well as configuring your CI server to run `npm run semantic-release` after all the builds pass.
+By default, `semantic-release-cli` supports the popular Travis CI and CircleCI servers. If you select `Other` as your server during configuration, `semantic-release-cli` will print out the environment variables you need to set on your CI server. You will be responsible for adding these environment variables as well as configuring your CI server to run `npm run semantic-release` after all the builds pass.
 
 Note that your CI server will also need to set the environment variable `CI=true` so that `semantic-release` will not perform a dry run. (Most CI services do this by default.) See the `semantic-release` documentation for more details.
 
