@@ -62,7 +62,7 @@ __semantic-release-cli performs the following steps:__
 
 ## Travis CI
 For Travis CI, `semantic-release-cli` performs the following additional steps:
-1. Overwrite your .travis.yml file
+1. Overwrite your `.travis.yml` file
 	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
 	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
 1. Login to Travis CI to configure the package
@@ -72,7 +72,7 @@ For Travis CI, `semantic-release-cli` performs the following additional steps:
 ## CircleCI
 
 For CircleCI, `semantic-release-cli` performs the following additional steps:
-1. Create minimal config.yml file (if CircleCI was selected)
+1. Create minimal `config.yml` file (if CircleCI was selected)
 ```yml
 version: 2
 jobs:
