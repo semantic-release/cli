@@ -1,7 +1,7 @@
 const url = require('url');
 
 const _ = require('lodash');
-const {promisify} = require('bluebird');
+const {promisifyAll} = require('bluebird');
 const inquirer = require('inquirer');
 const npm = require('npm');
 const RegClient = require('npm-registry-client');
@@ -11,7 +11,7 @@ const log = require('npmlog');
 const passwordStorage = require('./password-storage')('npm');
 
 async function getNpmToken({npm, options}) {
-  const client = new RegClient({log});
+  const client = promisifyAll(new RegClient({log}));
 
   const body = {
     _id: `org.couchdb.user:${npm.username}`,
@@ -23,9 +23,17 @@ async function getNpmToken({npm, options}) {
   };
 
   const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
-  const {token} = await promisify(client.request.bind(client, uri))({method: 'PUT', body});
+  const { err, token } = await client.requestAsync(uri, {method: 'PUT', body } ).catch(
+    err => { 
+      // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
+      if (err.code = 'E409') {
+        return client.requestAsync(uri, { authed: true, method: 'PUT', auth: { username: npm.username, password: npm.password }, body })
+          .catch(err => ({ err }))
+      }
+    }
+  )
 
-  if (!token) throw new Error('Could not login to GitHub.');
+  if (!token) throw new Error('Could not login to npm.');
 
   if (options.keychain) {
     passwordStorage.set(npm.username, npm.password);
