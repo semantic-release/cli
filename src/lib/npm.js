@@ -23,17 +23,16 @@ async function getNpmToken({npm, options}) {
   };
 
   const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
-  const { err, token } = await client.requestAsync(uri, {method: 'PUT', body } ).catch(
-    err => { 
-      // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
-      if (err.code = 'E409') {
-        return client.requestAsync(uri, { authed: true, method: 'PUT', auth: { username: npm.username, password: npm.password }, body })
-          .catch(err => ({ err }))
-      }
+  const {err, token} = await client.requestAsync(uri, {method: 'PUT', body}).catch(err => {
+    // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
+    if (err.code === 'E409') {
+      return client
+        .requestAsync(uri, {authed: true, method: 'PUT', auth: {username: npm.username, password: npm.password}, body})
+        .catch(err => ({err}));
     }
-  )
+  });
 
-  if (!token) throw new Error('Could not login to npm.');
+  if (!token) throw new Error(`Could not login to npm. ${err}`);
 
   if (options.keychain) {
     passwordStorage.set(npm.username, npm.password);
@@ -42,14 +41,31 @@ async function getNpmToken({npm, options}) {
   log.info('Successfully created npm token.');
 }
 
+function getRegistry(pkg, conf) {
+  if (pkg.publishConfig && pkg.publishConfig.registry) return pkg.publishConfig.registry;
+
+  if (pkg.name[0] !== '@') return conf.get('registry') || 'https://registry.npmjs.org/';
+
+  const scope = pkg.name.split('/')[0];
+  const scopedRegistry = conf.get(`${scope}/registry`);
+
+  if (scopedRegistry) return scopedRegistry;
+
+  return conf.get('registry') || 'https://registry.npmjs.org/';
+}
+
 module.exports = async function(pkg, info) {
   info.npm = await inquirer.prompt([
     {
       type: 'input',
       name: 'registry',
       message: 'What is your npm registry?',
-      default: npm.config.get('registry'),
-      validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true, require_tld: false}), // eslint-disable-line camelcase
+      default: getRegistry(pkg, npm.config),
+      validate: _.bind(validator.isURL, null, _, {
+        protocols: ['http', 'https'],
+        require_protocol: true, // eslint-disable-line camelcase
+        require_tld: false, // eslint-disable-line camelcase
+      }),
     },
     {
       type: 'input',
