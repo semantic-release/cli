@@ -10,6 +10,8 @@ const log = require('npmlog');
 
 const passwordStorage = require('./password-storage')('npm');
 
+const DEFAULT_REGISTRY = 'https://registry.npmjs.org/';
+
 async function getNpmToken({npm, options}) {
   const client = promisifyAll(new RegClient({log}));
 
@@ -44,14 +46,14 @@ async function getNpmToken({npm, options}) {
 function getRegistry(pkg, conf) {
   if (pkg.publishConfig && pkg.publishConfig.registry) return pkg.publishConfig.registry;
 
-  if (pkg.name[0] !== '@') return conf.get('registry') || 'https://registry.npmjs.org/';
+  if (pkg.name[0] !== '@') return conf.get('registry') || DEFAULT_REGISTRY;
 
   const scope = pkg.name.split('/')[0];
   const scopedRegistry = conf.get(`${scope}/registry`);
 
   if (scopedRegistry) return scopedRegistry;
 
-  return conf.get('registry') || 'https://registry.npmjs.org/';
+  return conf.get('registry') || DEFAULT_REGISTRY;
 }
 
 module.exports = async function(pkg, info) {
@@ -66,6 +68,14 @@ module.exports = async function(pkg, info) {
         require_protocol: true, // eslint-disable-line camelcase
         require_tld: false, // eslint-disable-line camelcase
       }),
+    },
+    {
+      type: 'list',
+      name: 'authmethod',
+      message: 'Which authentication method is this npm registry using?',
+      choices: [{name: 'Token based', value: 'token'}, {name: 'Legacy (username, password, email)', value: 'legacy'}],
+      default: 'token',
+      when: answers => answers.registry !== DEFAULT_REGISTRY && !_.has(info.options, 'npm-token'),
     },
     {
       type: 'input',
@@ -90,6 +100,14 @@ module.exports = async function(pkg, info) {
         }
       },
     },
+    {
+      type: 'input',
+      name: 'email',
+      message: 'What is your npm email address?',
+      default: info.options['npm-username'] || npm.config.get('init-author-email'),
+      validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+      when: answers => answers.authmethod === 'legacy',
+    },
   ]);
 
   if (_.has(info.options, 'npm-token')) {
@@ -101,6 +119,9 @@ module.exports = async function(pkg, info) {
   const storedPassword = await passwordStorage.get(info.npm.username);
 
   info.npm.password = info.npm.password || storedPassword;
+  info.npm.authmethod = info.npm.authmethod || 'token';
 
-  await getNpmToken(info);
+  if (info.npm.authmethod === 'token') {
+    await getNpmToken(info);
+  }
 };

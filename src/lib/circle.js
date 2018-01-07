@@ -99,7 +99,14 @@ async function setupCircleProject(info) {
 
   await followProject(info, defaultReq);
   await addEnvironmentVariable(info, defaultReq, {name: 'GH_TOKEN', value: info.github.token});
-  await addEnvironmentVariable(info, defaultReq, {name: 'NPM_TOKEN', value: info.npm.token});
+
+  if (info.npm.authmethod === 'token') {
+    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_TOKEN', value: info.npm.token});
+  } else {
+    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_USERNAME', value: info.npm.username});
+    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_PASSWORD', value: info.npm.password});
+    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_EMAIL', value: info.npm.email});
+  }
 }
 
 async function followProject(info, defaultReq) {

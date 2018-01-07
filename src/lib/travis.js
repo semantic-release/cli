@@ -112,7 +112,15 @@ async function setUpTravis(pkg, info) {
   log.info('Successfully created Travis CI hook.');
 
   await setEnvVar(travis, 'GH_TOKEN', info.github.token);
-  await setEnvVar(travis, 'NPM_TOKEN', info.npm.token);
+
+  if (info.npm.authmethod === 'token') {
+    await setEnvVar(travis, 'NPM_TOKEN', info.npm.token);
+  } else {
+    await setEnvVar(travis, 'NPM_USERNAME', info.npm.username);
+    await setEnvVar(travis, 'NPM_PASSWORD', info.npm.password);
+    await setEnvVar(travis, 'NPM_EMAIL', info.npm.email);
+  }
+
   log.info('Successfully set environment variables on Travis CI.');
   await createTravisYml(info);
 }
