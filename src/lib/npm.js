@@ -25,10 +25,10 @@ async function getNpmToken({npm, options}) {
 
   const {err, token} = await new Promise(resolve => {
     client.request(uri, {method: 'PUT', body}, async (err, parsed, raw, response) => {
-      if (err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
+      if (err && err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
         await askForOTP(uri, body, npm);
         resolve({token: npm.token});
-      } else if (err.code === 'E409') {
+      } else if (err && err.code === 'E409') {
         // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
         return client
           .requestAsync(uri, {
