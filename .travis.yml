@@ -1,10 +1,10 @@
 language: node_js
-notifications:
-  email: false
+
 node_js:
-  - '8'
-  - '6'
-  - '4'
+  - 9
+  - 8
+  - 6
+  - 4
 
 # Trigger a push build on master and greenkeeper branches + PRs build on every branches
 # Avoid double build on PRs (See https://github.com/travis-ci/travis-ci/issues/1147)
@@ -17,6 +17,15 @@ branches:
 install:
   - travis_retry npm install
 
+script:
+  - npm run test
+
 after_success:
   - npm run codecov
-  - npm run semantic-release
+
+jobs:
+  include:
+    - stage: release
+      node_js: lts/*
+      script:
+        - npm run semantic-release
