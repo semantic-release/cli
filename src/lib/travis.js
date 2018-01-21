@@ -74,7 +74,7 @@ async function createTravisYml() {
       default: true,
     },
   ]);
-  if (!answers.yml) return;
+  if (!answers.yml) return false;
   const tyml = yaml.safeDump(travisyml);
   try {
     accessSync('.travis.yml');
@@ -86,11 +86,12 @@ async function createTravisYml() {
         message: 'Do you want to overwrite the existing `.travis.yml`?',
       },
     ]);
-    if (!ok) return;
+    if (!ok) return false;
   } catch (err) {}
   log.verbose('Writing `.travis.yml`.');
   writeFileSync('.travis.yml', tyml);
   log.info('Successfully created `.travis.yml`.');
+  return true;
 }
 
 async function setUpTravis(pkg, info) {
@@ -123,7 +124,9 @@ async function setUpTravis(pkg, info) {
   }
 
   log.info('Successfully set environment variables on Travis CI.');
-  await createTravisYml(info);
+
+  const isTravisYmlWritten = await createTravisYml(info);
+  if (!isTravisYmlWritten) return;
 
   pkg.scripts['travis-deploy-once'] = 'travis-deploy-once';
 
