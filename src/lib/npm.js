@@ -48,7 +48,7 @@ async function getNpmToken({npm, options}) {
   });
 
   if (err) log.verbose(`Error: ${err}`);
-  if (!token) throw new Error(`Could not login to npm.`);
+  if (!token) throw new Error(`Could not login to npm because you don't have token generated, run 'npm token create'.`);
 
   if (options.keychain) {
     passwordStorage.set(npm.username, npm.password);
