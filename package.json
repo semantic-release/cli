@@ -70,7 +70,7 @@
     "prettier": "^1.10.0",
     "rimraf": "^2.4.2",
     "semantic-release": "^12.2.2",
-    "xo": "^0.18.2"
+    "xo": "^0.20.0"
   },
   "engines": {
     "node": ">=4",
