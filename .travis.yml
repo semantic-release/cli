@@ -20,9 +20,6 @@ install:
 script:
   - npm run test
 
-after_success:
-  - npm run codecov
-
 jobs:
   include:
     - stage: release
