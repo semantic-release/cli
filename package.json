@@ -49,9 +49,9 @@
     "npm": "^5.5.1",
     "npm-registry-client": "^8.5.0",
     "npmlog": "^4.0.0",
-    "parse-git-config": "^1.1.1",
+    "parse-git-config": "^2.0.0",
     "parse-github-repo-url": "^1.0.0",
-    "request": "^2.58.0",
+    "request": "^2.85.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.1.1",
     "travis-ci": "^2.1.1",
@@ -61,16 +61,12 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "codecov": "^3.0.0",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.0.0",
-    "eslint-config-prettier": "^2.6.0",
-    "eslint-plugin-prettier": "^2.3.1",
     "nyc": "^11.2.1",
-    "prettier": "^1.10.0",
     "rimraf": "^2.4.2",
-    "semantic-release": "^12.2.2",
-    "xo": "^0.18.2"
+    "semantic-release": "^15.0.0",
+    "xo": "^0.20.0"
   },
   "engines": {
     "node": ">=4",
@@ -110,10 +106,7 @@
   },
   "preferGlobal": true,
   "prettier": {
-    "printWidth": 120,
-    "singleQuote": true,
-    "bracketSpacing": false,
-    "trailingComma": "es5"
+    "printWidth": 120
   },
   "repository": {
     "type": "git",
@@ -128,14 +121,7 @@
     "test": "nyc ava -v"
   },
   "xo": {
-    "extends": [
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": 2
-    }
+    "prettier": true,
+    "space": true
   }
 }

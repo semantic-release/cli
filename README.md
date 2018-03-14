@@ -1,7 +1,6 @@
 # semantic-release-cli
 
 [![Travis](https://img.shields.io/travis/semantic-release/cli.svg)](https://travis-ci.org/semantic-release/cli)
-[![Codecov](https://img.shields.io/codecov/c/github/semantic-release/cli.svg)](https://codecov.io/gh/semantic-release/cli)
 [![Greenkeeper badge](https://badges.greenkeeper.io/semantic-release/cli.svg)](https://greenkeeper.io/)
 
 ## Install
