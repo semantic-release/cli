@@ -23,8 +23,9 @@ async function getNpmToken({npm, options}) {
 
   const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
 
-  const {err, token} = await new Promise(resolve => {
+  const {err, token, possibleCause=''} = await new Promise(resolve => {
     client.request(uri, {method: 'PUT', body}, async (err, parsed, raw, response) => {
+	       
       if (err && err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
         await askForOTP(uri, body, npm);
         resolve({token: npm.token});
@@ -38,17 +39,17 @@ async function getNpmToken({npm, options}) {
             body,
           })
           .then(res => resolve(res))
-          .catch(err => resolve({err}));
+          .catch(err => resolve({err, possibleCause: err.message}));
       } else if (err) {
-        resolve({err});
+        resolve({err, possibleCause:'Bad username or password'});
       } else {
-        resolve(response.body);
+	resolve(parsed);// at this point a token was created, so no need for future `npm token create`
       }
     });
   });
 
   if (err) log.verbose(`Error: ${err}`);
-  if (!token) throw new Error(`Could not login to npm because you don't have token generated, run 'npm token create'.`);
+  if (!token) throw new Error(`Could not login to npm. ${possibleCause}`);
 
   if (options.keychain) {
     passwordStorage.set(npm.username, npm.password);
