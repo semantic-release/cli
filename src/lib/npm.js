@@ -42,7 +42,7 @@ async function getNpmToken({npm, options}) {
       } else if (err) {
         resolve({err});
       } else {
-        resolve(response.body);
+        resolve(parsed);
       }
     });
   });
@@ -72,11 +72,11 @@ async function validateToken(otp, uri, body, npm) {
   }
 
   return new Promise(resolve => {
-    client.request(uri, {method: 'PUT', auth: {otp}, body}, (err, parsed, raw, response) => {
-      if (err || !response.body.ok) {
+    client.request(uri, {method: 'PUT', auth: {otp}, body}, (err, parsed) => {
+      if (err || !parsed || !parsed.ok) {
         resolve('Invalid authentication code');
       } else {
-        npm.token = response.body.token;
+        npm.token = parsed.token;
         resolve(true);
       }
     });
