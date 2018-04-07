@@ -49,6 +49,7 @@
     "npm": "^5.5.1",
     "npm-registry-client": "^8.5.0",
     "npmlog": "^4.0.0",
+    "p-retry": "^1.0.0",
     "parse-git-config": "^2.0.0",
     "parse-github-repo-url": "^1.0.0",
     "request": "^2.85.0",

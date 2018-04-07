@@ -2,7 +2,8 @@ const {readFileSync, writeFileSync, accessSync} = require('fs');
 const {join} = require('path');
 
 const _ = require('lodash');
-const {promisify, delay} = require('bluebird');
+const {promisify} = require('bluebird');
+const pRetry = require('p-retry');
 const home = require('user-home');
 const inquirer = require('inquirer');
 const Travis = require('travis-ci');
@@ -29,10 +30,8 @@ const travisyml = {
 };
 
 async function isSyncing(travis) {
-  try {
-    const res = await promisify(travis.users.get.bind(travis))();
-    return _.get(res, 'user.is_syncing');
-  } catch (err) {}
+  const res = await pify(travis.users.get)();
+  return _.get(res, 'user.is_syncing');
 }
 
 async function syncTravis(travis) {
@@ -42,11 +41,7 @@ async function syncTravis(travis) {
     if (err.message !== 'Sync already in progress. Try again later.') throw err;
   }
 
-  /* eslint-disable no-await-in-loop */
-  while (await isSyncing(travis)) {
-    await delay(1000);
-  }
-  /* eslint-enable no-await-in-loop */
+  await pRetry(() => isSyncing(travis), {forever: true, minTimeout: 500, maxTimeout: 1000});
 }
 
 async function setEnvVar(travis, name, value) {
