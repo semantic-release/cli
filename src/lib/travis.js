@@ -2,7 +2,7 @@ const {readFileSync, writeFileSync, accessSync} = require('fs');
 const {join} = require('path');
 
 const _ = require('lodash');
-const {promisify} = require('bluebird');
+const pify = require('pify');
 const pRetry = require('p-retry');
 const home = require('user-home');
 const inquirer = require('inquirer');
@@ -36,7 +36,7 @@ async function isSyncing(travis) {
 
 async function syncTravis(travis) {
   try {
-    await promisify(travis.users.sync.post.bind(travis))();
+    await pify(travis.users.sync.post)();
   } catch (err) {
     if (err.message !== 'Sync already in progress. Try again later.') throw err;
   }
@@ -45,15 +45,13 @@ async function syncTravis(travis) {
 }
 
 async function setEnvVar(travis, name, value) {
-  const tagent = travis.agent;
-  const response = await promisify(tagent.request.bind(tagent))(
-    'GET',
-    `/settings/env_vars?repository_id=${travis.repoid}`
-  );
+  const request = pify(travis.agent.request.bind(travis.agent));
+
+  const response = await request('GET', `/settings/env_vars?repository_id=${travis.repoid}`);
   let envid = _.get(_.find(response.env_vars, ['name', name]), 'id');
   envid = envid ? `/${envid}` : '';
 
-  await await promisify(tagent.request.bind(tagent))(
+  await request(
     envid ? 'PATCH' : 'POST',
     `/settings/env_vars${envid}?repository_id=${travis.repoid}`,
     {env_var: {name, value, public: false}} // eslint-disable-line camelcase
@@ -94,14 +92,11 @@ async function setUpTravis(pkg, info) {
   log.info('Syncing repositories...');
   await syncTravis(travis);
 
-  travis.repoid = _.get(
-    await promisify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))(),
-    'repo.id'
-  );
+  travis.repoid = _.get(await pify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get)(), 'repo.id');
 
   if (!travis.repoid) throw new Error('Could not get repo id');
 
-  const {result} = await promisify(travis.hooks(travis.repoid).put.bind(travis))({
+  const {result} = await pify(travis.hooks(travis.repoid).put)({
     hook: {active: true},
   });
   if (!result) throw new Error('Could not enable hook on Travis CI');
@@ -155,8 +150,11 @@ module.exports = async function(endpoint, pkg, info) {
   info.travis = travis;
   travis.agent._endpoint = endpoint;
 
-  if (token) travis.agent.setAccessToken(token);
-  else await promisify(travis.authenticate.bind(travis))({github_token: info.github.token}); // eslint-disable-line camelcase
+  if (token) {
+    travis.agent.setAccessToken(token);
+  } else {
+    await pify(travis.authenticate)({github_token: info.github.token}); // eslint-disable-line camelcase
+  }
 
   await setUpTravis(pkg, info);
 };

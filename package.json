@@ -37,7 +37,6 @@
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "base32": "0.0.6",
-    "bluebird": "^3.4.6",
     "clipboardy": "^1.2.2",
     "git-config-path": "^1.0.1",
     "github-url-from-git": "^1.4.0",
@@ -52,6 +51,7 @@
     "p-retry": "^1.0.0",
     "parse-git-config": "^2.0.0",
     "parse-github-repo-url": "^1.0.0",
+    "pify": "^3.0.0",
     "request": "^2.85.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.1.1",
@@ -66,8 +66,9 @@
     "cz-conventional-changelog": "^2.0.0",
     "nyc": "^11.2.1",
     "rimraf": "^2.4.2",
-    "semantic-release": "^15.0.0",
-    "xo": "^0.20.0"
+    "semantic-release": "^15.1.5",
+    "xo": "^0.20.0",
+    "travis-deploy-once": "^4.4.1"
   },
   "engines": {
     "node": ">=4",
@@ -119,7 +120,8 @@
     "lint": "xo",
     "pretest": "npm run lint",
     "semantic-release": "semantic-release",
-    "test": "nyc ava -v"
+    "test": "nyc ava -v",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "xo": {
     "prettier": true,

@@ -1,6 +1,6 @@
 const {readFileSync, writeFileSync} = require('fs');
 const _ = require('lodash');
-const {promisify} = require('bluebird');
+const pify = require('pify');
 const nopt = require('nopt');
 const npm = require('npm');
 const request = require('request-promise').defaults({json: true});
@@ -68,7 +68,7 @@ Aliases:
 
   let config;
   try {
-    config = (await promisify(npm.load.bind(npm))({progress: false})).config;
+    config = (await pify(npm.load)({progress: false})).config;
   } catch (err) {
     console.log('Failed to load npm config.', err);
     process.exitCode = 1;

@@ -1,6 +1,6 @@
 const url = require('url');
 const _ = require('lodash');
-const {promisifyAll} = require('bluebird');
+const pify = require('pify');
 const inquirer = require('inquirer');
 const npm = require('npm');
 const RegClient = require('npm-registry-client');
@@ -8,7 +8,7 @@ const validator = require('validator');
 const log = require('npmlog');
 const passwordStorage = require('./password-storage')('npm');
 
-const client = promisifyAll(new RegClient({log}));
+const client = new RegClient({log});
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org/';
 
 async function getNpmToken({npm, options}) {
@@ -22,32 +22,36 @@ async function getNpmToken({npm, options}) {
   };
 
   const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
+  let token;
 
-  const {err, token} = await new Promise(resolve => {
-    client.request(uri, {method: 'PUT', body}, async (err, parsed, raw, response) => {
-      if (err && err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
-        await askForOTP(uri, body, npm);
-        resolve({token: npm.token});
-      } else if (err && err.code === 'E409') {
-        // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
-        return client
-          .requestAsync(uri, {
-            authed: true,
-            method: 'PUT',
-            auth: {username: npm.username, password: npm.password},
-            body,
-          })
-          .then(res => resolve(res))
-          .catch(err => resolve({err}));
-      } else if (err) {
-        resolve({err});
-      } else {
-        resolve(parsed);
-      }
+  try {
+    [{token}] = await pify(client.request.bind(client), {multiArgs: true})(uri, {
+      method: 'PUT',
+      body,
     });
-  });
+  } catch (err) {
+    const [error, , , response] = err;
 
-  if (err) log.verbose(`Error: ${err}`);
+    if (error.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
+      await askForOTP(uri, body, npm);
+      ({token} = npm);
+    } else if (error.code === 'E409') {
+      // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
+      try {
+        ({token} = await pify(client.request.bind(client))(uri, {
+          authed: true,
+          method: 'PUT',
+          auth: {username: npm.username, password: npm.password},
+          body,
+        }));
+      } catch (err) {
+        log.verbose(`Error: ${err}`);
+      }
+    } else {
+      log.verbose(`Error: ${error}`);
+    }
+  }
+
   if (!token) throw new Error(`Could not login to npm.`);
 
   if (options.keychain) {
@@ -71,16 +75,16 @@ async function validateToken(otp, uri, body, npm) {
     return false;
   }
 
-  return new Promise(resolve => {
-    client.request(uri, {method: 'PUT', auth: {otp}, body}, (err, parsed) => {
-      if (err || !parsed || !parsed.ok) {
-        resolve('Invalid authentication code');
-      } else {
-        npm.token = parsed.token;
-        resolve(true);
-      }
-    });
-  });
+  try {
+    const response = await pify(client.request.bind(client))(uri, {method: 'PUT', auth: {otp}, body});
+    if (response && response.ok) {
+      npm.token = response.token;
+      return true;
+    }
+  } catch (err) {
+    // Invalid 2FA token
+  }
+  return 'Invalid authentication code';
 }
 
 function getRegistry(pkg, conf) {
