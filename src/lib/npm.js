@@ -1,6 +1,5 @@
 const url = require('url');
 const _ = require('lodash');
-const {promisifyAll} = require('bluebird');
 const inquirer = require('inquirer');
 const npm = require('npm');
 const RegClient = require('npm-registry-client');
@@ -8,7 +7,7 @@ const validator = require('validator');
 const log = require('npmlog');
 const passwordStorage = require('./password-storage')('npm');
 
-const client = promisifyAll(new RegClient({log}));
+const client = new RegClient({log});
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org/';
 
 async function getNpmToken({npm, options}) {
@@ -23,63 +22,64 @@ async function getNpmToken({npm, options}) {
 
   const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
 
-  const {err, token} = await new Promise(resolve => {
-    client.request(uri, {method: 'PUT', body}, async (err, parsed, raw, response) => {
-      if (err && err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
-        await askForOTP(uri, body, npm);
-        resolve({token: npm.token});
-      } else if (err && err.code === 'E409') {
-        // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
-        return client
-          .requestAsync(uri, {
-            authed: true,
-            method: 'PUT',
-            auth: {username: npm.username, password: npm.password},
-            body,
-          })
-          .then(res => resolve(res))
-          .catch(err => resolve({err}));
-      } else if (err) {
-        resolve({err});
-      } else {
-        resolve(response.body);
-      }
-    });
-  });
+  const params = {method: 'PUT', body};
 
-  if (err) log.verbose(`Error: ${err}`);
+  let [err, parsed, , response] = await requestAsync(uri, params);
+
+  // Handle otp authentication
+  if (err && err.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
+    [err, parsed, , response] = await requestAsync(
+      uri,
+      Object.assign({}, params, {
+        auth: await askForOTP(),
+      })
+    );
+
+    // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
+  } else if (err && err.code === 'E409') {
+    [err, parsed, , response] = await requestAsync(
+      uri,
+      Object.assign({}, params, {
+        authed: true,
+        auth: {
+          username: npm.username,
+          password: npm.password,
+        },
+      })
+    );
+  }
+
+  if (err) {
+    log.verbose(`Error: ${err}`);
+  }
+
+  const token = (parsed && parsed.ok && parsed.token) || null;
+
   if (!token) throw new Error(`Could not login to npm.`);
 
   if (options.keychain) {
     passwordStorage.set(npm.username, npm.password);
   }
+
   npm.token = token;
+
   log.info(`Successfully created npm token. ${npm.token}`);
 }
 
-async function askForOTP(uri, body, npm) {
+async function requestAsync(uri, params) {
+  return new Promise(resolve => {
+    client.request(uri, params, (err, parsed, raw, response) => {
+      resolve([err, parsed, raw, response]);
+    });
+  });
+}
+
+async function askForOTP() {
   return inquirer.prompt({
     type: 'input',
     name: 'otp',
     message: 'What is your NPM two-factor authentication code?',
-    validate: answer => validateToken(answer, uri, body, npm),
-  });
-}
-
-async function validateToken(otp, uri, body, npm) {
-  if (!validator.isNumeric(otp)) {
-    return false;
-  }
-
-  return new Promise(resolve => {
-    client.request(uri, {method: 'PUT', auth: {otp}, body}, (err, parsed, raw, response) => {
-      if (err || !response.body.ok) {
-        resolve('Invalid authentication code');
-      } else {
-        npm.token = response.body.token;
-        resolve(true);
-      }
-    });
+    validate: answer => validator.isNumeric(answer) || 'Invalid authentication code',
   });
 }
 
