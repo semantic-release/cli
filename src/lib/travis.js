@@ -30,13 +30,13 @@ const travisyml = {
 };
 
 async function isSyncing(travis) {
-  const res = await pify(travis.users.get)();
+  const res = await pify(travis.users.get.bind(travis))();
   return _.get(res, 'user.is_syncing');
 }
 
 async function syncTravis(travis) {
   try {
-    await pify(travis.users.sync.post)();
+    await pify(travis.users.sync.post.bind(travis))();
   } catch (err) {
     if (err.message !== 'Sync already in progress. Try again later.') throw err;
   }
@@ -92,11 +92,14 @@ async function setUpTravis(pkg, info) {
   log.info('Syncing repositories...');
   await syncTravis(travis);
 
-  travis.repoid = _.get(await pify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get)(), 'repo.id');
+  travis.repoid = _.get(
+    await pify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))(),
+    'repo.id'
+  );
 
   if (!travis.repoid) throw new Error('Could not get repo id');
 
-  const {result} = await pify(travis.hooks(travis.repoid).put)({
+  const {result} = await pify(travis.hooks(travis.repoid).put.bind(travis))({
     hook: {active: true},
   });
   if (!result) throw new Error('Could not enable hook on Travis CI');
@@ -153,7 +156,7 @@ module.exports = async function(endpoint, pkg, info) {
   if (token) {
     travis.agent.setAccessToken(token);
   } else {
-    await pify(travis.authenticate)({github_token: info.github.token}); // eslint-disable-line camelcase
+    await pify(travis.authenticate.bind(travis))({github_token: info.github.token}); // eslint-disable-line camelcase
   }
 
   await setUpTravis(pkg, info);
