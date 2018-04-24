@@ -24,8 +24,8 @@ const travisyml = {
   node_js: ['9', '8', '6', '4'], // eslint-disable-line camelcase
   after_success: ['npm run travis-deploy-once "npm run semantic-release"'], // eslint-disable-line camelcase
   branches: {
-    // ignore git tags created by semantic-release, like "v1.2.3"
-    except: [/^v\d+\.\d+\.\d+$/.toString()],
+    // Avoid double build on PRs (see: https://github.com/travis-ci/travis-ci/issues/1147)
+    only: ['master'],
   },
 };
 
