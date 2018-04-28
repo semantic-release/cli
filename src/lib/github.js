@@ -44,7 +44,7 @@ async function createAuthorization(info) {
     if (response.statusCode === 201) return response.body.token;
   } catch (err) {
     if (err.statusCode === 401 && err.response.headers['x-github-otp']) {
-      const type = err.response.headers['x-github-otp'].split('; ')[1];
+      const [, type] = err.response.headers['x-github-otp'].split('; ');
 
       if (info.github.retry) log.warn('Invalid two-factor authentication code.');
       else log.info(`Two-factor authentication code needed via ${type}.`);

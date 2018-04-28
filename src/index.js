@@ -68,7 +68,7 @@ Aliases:
 
   let config;
   try {
-    config = (await pify(npm.load)({progress: false})).config;
+    ({config} = await pify(npm.load)({progress: false}));
   } catch (err) {
     console.log('Failed to load npm config.', err);
     process.exitCode = 1;
