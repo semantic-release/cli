@@ -87,7 +87,7 @@ async function createTravisYml() {
 }
 
 async function setUpTravis(pkg, info) {
-  const travis = info.travis;
+  const {travis} = info;
 
   log.info('Syncing repositories...');
   await syncTravis(travis);

@@ -92,7 +92,7 @@ function getRegistry(pkg, conf) {
 
   if (pkg.name[0] !== '@') return conf.get('registry') || DEFAULT_REGISTRY;
 
-  const scope = pkg.name.split('/')[0];
+  const [scope] = pkg.name.split('/');
   const scopedRegistry = conf.get(`${scope}/registry`);
 
   if (scopedRegistry) return scopedRegistry;
