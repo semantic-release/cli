@@ -58,7 +58,7 @@
     "travis-ci": "^2.1.1",
     "update-notifier": "^2.3.0",
     "user-home": "^2.0.0",
-    "validator": "^9.0.0"
+    "validator": "^10.0.0"
   },
   "devDependencies": {
     "ava": "^0.25.0",
