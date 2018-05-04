@@ -40,5 +40,5 @@ module.exports = async function(pkg, info) {
     },
   ]);
 
-  await cis[answers.ci].apply(null, _.compact([answers.endpoint, pkg, info]));
+  await Reflect.apply(cis[answers.ci], null, _.compact([answers.endpoint, pkg, info]));
 };

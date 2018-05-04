@@ -66,8 +66,9 @@
     "cz-conventional-changelog": "^2.0.0",
     "nyc": "^11.2.1",
     "rimraf": "^2.4.2",
-    "semantic-release": "^15.1.5",
-    "xo": "^0.20.0"
+    "semantic-release": "^15.2.0",
+    "xo": "^0.21.0",
+    "travis-deploy-once": "^5.0.0"
   },
   "engines": {
     "node": ">=6",
@@ -107,7 +108,8 @@
   },
   "preferGlobal": true,
   "prettier": {
-    "printWidth": 120
+    "printWidth": 120,
+    "trailingComma": "es5"
   },
   "repository": {
     "type": "git",
@@ -119,7 +121,8 @@
     "lint": "xo",
     "pretest": "npm run lint",
     "semantic-release": "semantic-release",
-    "test": "nyc ava -v"
+    "test": "nyc ava -v",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "xo": {
     "prettier": true,
