@@ -87,7 +87,7 @@ async function createTravisYml() {
 }
 
 async function setUpTravis(pkg, info) {
-  const {travis} = info;
+  const {travis, ci, endpoint} = info;
 
   log.info('Syncing repositories...');
   await syncTravis(travis);
@@ -118,7 +118,20 @@ async function setUpTravis(pkg, info) {
   log.info('Successfully set environment variables on Travis CI.');
   await createTravisYml(info);
 
-  pkg.scripts['travis-deploy-once'] = 'travis-deploy-once';
+  const cmd = 'travis-deploy-once';
+
+  // Travis CI Pro and Enterprise require additional flags to be set.
+  // Details: https://github.com/semantic-release/travis-deploy-once/issues/52
+  switch (ci) {
+    case 'Travis CI Pro':
+      pkg.scripts[cmd] = `${cmd} --pro`;
+      break;
+    case 'Travis CI Enterprise':
+      pkg.scripts[cmd] = `${cmd} --travis-url ${endpoint}`;
+      break;
+    default:
+      pkg.scripts[cmd] = cmd;
+  }
 
   try {
     const {'dist-tags': distTags} = await request('https://registry.npmjs.org/travis-deploy-once');
@@ -150,7 +163,10 @@ module.exports = async function(endpoint, pkg, info) {
       'User-Agent': 'Travis',
     },
   });
+
   info.travis = travis;
+  info.endpoint = endpoint;
+
   travis.agent._endpoint = endpoint;
 
   if (token) {
