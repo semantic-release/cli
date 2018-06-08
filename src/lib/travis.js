@@ -92,10 +92,17 @@ async function setUpTravis(pkg, info) {
   log.info('Syncing repositories...');
   await syncTravis(travis);
 
-  travis.repoid = _.get(
-    await pify(travis.repos(info.ghrepo.slug[0], info.ghrepo.slug[1]).get.bind(travis))(),
-    'repo.id'
-  );
+  const [githubOrg, repoName] = info.ghrepo.slug;
+
+  try {
+    travis.repoid = _.get(await pify(travis.repos(githubOrg, repoName).get.bind(travis))(), 'repo.id');
+  } catch (error) {
+    if (error.file && error.file === 'not found') {
+      throw new Error(`Unable to find repo id for "${info.giturl}" on Travis.`);
+    } else {
+      throw error;
+    }
+  }
 
   if (!travis.repoid) throw new Error('Could not get repo id');
 
