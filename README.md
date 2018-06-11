@@ -64,7 +64,8 @@ For Travis CI, `semantic-release-cli` performs the following additional steps:
 1. Overwrite your `.travis.yml` file
 	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
 	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
-1. Login to Travis CI to configure the package
+1. Login to Travis CI to configure the package. This step requires your module to define a valid, case-sensitive
+[`repository` field](https://docs.npmjs.com/files/package.json#repository).
 	* Enable builds of your repo
 	* Add `GH_TOKEN` and `NPM_TOKEN` environment variables in the settings
 
