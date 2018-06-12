@@ -63,7 +63,8 @@ module.exports = async function(pkg, info) {
       },
     ]);
     info.ghepurl = answers.url;
-    return;
+    if (answers.enterprise) return;
+    throw new Error(`GitHub repository URL is invalid: ${repoUrl}`);
   }
 
   info.ghrepo = {slug: parsedUrl};
