@@ -21,7 +21,7 @@ const travisyml = {
     email: false,
   },
   // https://github.com/nodejs/Release#release-schedule
-  node_js: ['9', '8', '6', '4'], // eslint-disable-line camelcase
+  node_js: ['10', '9', '8', '6'], // eslint-disable-line camelcase
   after_success: ['npm run travis-deploy-once "npm run semantic-release"'], // eslint-disable-line camelcase
   branches: {
     // ignore git tags created by semantic-release, like "v1.2.3"
