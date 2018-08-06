@@ -96,7 +96,9 @@ module.exports = async function(pkg, info) {
     },
   ]);
 
-  answers.password = answers.password || (await passwordStorage.get(answers.username));
+  if (!answers.password) {
+    answers.password = await passwordStorage.get(answers.username);
+  }
 
   info.github = answers;
   info.github.endpoint = info.ghepurl || 'https://api.github.com';
