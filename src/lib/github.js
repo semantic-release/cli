@@ -42,9 +42,9 @@ async function createAuthorization(info) {
       },
     });
     if (response.statusCode === 201) return response.body.token;
-  } catch (err) {
-    if (err.statusCode === 401 && err.response.headers['x-github-otp']) {
-      const [, type] = err.response.headers['x-github-otp'].split('; ');
+  } catch (error) {
+    if (error.statusCode === 401 && error.response.headers['x-github-otp']) {
+      const [, type] = error.response.headers['x-github-otp'].split('; ');
 
       if (info.github.retry) log.warn('Invalid two-factor authentication code.');
       else log.info(`Two-factor authentication code needed via ${type}.`);
@@ -54,7 +54,7 @@ async function createAuthorization(info) {
       info.github.retry = true;
       return createAuthorization(info);
     }
-    throw err;
+    throw error;
   }
 }
 
@@ -89,7 +89,7 @@ module.exports = async function(pkg, info) {
         try {
           const storedPassword = await passwordStorage.get(answers.username);
           return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
-        } catch (err) {
+        } catch (error) {
           log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
         }
       },
