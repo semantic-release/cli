@@ -35,7 +35,7 @@ const circleConfig = {
   },
 };
 
-async function getUserInput(info) {
+function getUserInput(info) {
   return inquirer.prompt([
     {
       type: 'input',
@@ -50,7 +50,7 @@ async function getUserInput(info) {
         try {
           const storedToken = await passwordStorage.get('token');
           return !info.options.keychain || info.options['ask-for-passwords'] || !storedToken;
-        } catch (err) {
+        } catch (error) {
           info.log.error(
             'Something went wrong with your stored api token. Delete them from your keychain and try again'
           );
@@ -153,7 +153,7 @@ function setupRequestLogging(info) {
   });
 }
 
-async function createConfigFile(info) {
+function createConfigFile(info) {
   if (!info.circle.createConfigFile || (!info.circle.overwrite && fs.existsSync('./.circleci/config.yml'))) {
     info.log.verbose('Config file creation skipped.');
     return;

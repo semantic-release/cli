@@ -69,8 +69,8 @@ Aliases:
   let config;
   try {
     ({config} = await pify(npm.load)({progress: false}));
-  } catch (err) {
-    console.log('Failed to load npm config.', err);
+  } catch (error) {
+    console.log('Failed to load npm config.', error);
     process.exitCode = 1;
     return;
   }
@@ -84,8 +84,8 @@ Aliases:
     await require('./lib/npm')(pkg, info);
     await require('./lib/github')(pkg, info);
     await require('./lib/ci')(pkg, info);
-  } catch (err) {
-    log.error(err);
+  } catch (error) {
+    log.error(error);
     process.exitCode = 1;
   }
 
@@ -104,8 +104,8 @@ Aliases:
     const {'dist-tags': distTags} = await request('https://registry.npmjs.org/semantic-release');
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies['semantic-release'] = `^${distTags[info.options.tag]}`;
-  } catch (err) {
-    log.error('Could not get latest `semantic-release` version.', err);
+  } catch (error) {
+    log.error('Could not get latest `semantic-release` version.', error);
   }
 
   log.verbose('Writing `package.json`.');

@@ -9,7 +9,7 @@ const request = require('request-promise').defaults({resolveWithFullResponse: tr
 const validator = require('validator');
 const log = require('npmlog');
 
-async function getRemoteUrl({repository}) {
+function getRemoteUrl({repository}) {
   if (!repository || !repository.url) {
     const gitConfig = ini.decode(readFileSync('./.git/config', 'utf8'));
     const repo = gitConfig['remote "origin"'].url;
@@ -29,9 +29,9 @@ module.exports = async function(pkg, info) {
   let repoUrl;
   try {
     repoUrl = await getRemoteUrl(pkg);
-  } catch (err) {
+  } catch (error) {
     log.error('Could not get repository url. Please create/add the repository.');
-    throw err;
+    throw error;
   }
 
   log.verbose(`Detected git url: ${repoUrl}`);
@@ -71,7 +71,7 @@ module.exports = async function(pkg, info) {
 
   try {
     await request.head(repoUrl);
-  } catch (err) {
+  } catch (error) {
     const answers = await inquirer.prompt([
       {
         type: 'confirm',

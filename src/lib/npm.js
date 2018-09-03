@@ -61,7 +61,7 @@ async function getNpmToken({npm, options}) {
   log.info(`Successfully created npm token. ${npm.token}`);
 }
 
-async function askForOTP(uri, body, npm) {
+function askForOTP(uri, body, npm) {
   return inquirer.prompt({
     type: 'input',
     name: 'otp',
@@ -81,7 +81,7 @@ async function validateToken(otp, uri, body, npm) {
       npm.token = response.token;
       return true;
     }
-  } catch (err) {
+  } catch (error) {
     // Invalid 2FA token
   }
   return 'Invalid authentication code';
@@ -139,7 +139,7 @@ module.exports = async function(pkg, info) {
         try {
           const storedPassword = await passwordStorage.get(answers.username);
           return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
-        } catch (err) {
+        } catch (error) {
           log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
         }
       },

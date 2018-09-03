@@ -37,8 +37,8 @@ async function isSyncing(travis) {
 async function syncTravis(travis) {
   try {
     await pify(travis.users.sync.post.bind(travis))();
-  } catch (err) {
-    if (err.message !== 'Sync already in progress. Try again later.') throw err;
+  } catch (error) {
+    if (error.message !== 'Sync already in progress. Try again later.') throw error;
   }
 
   await pRetry(() => isSyncing(travis), {forever: true, minTimeout: 500, maxTimeout: 1000});
@@ -80,7 +80,7 @@ async function createTravisYml() {
       },
     ]);
     if (!ok) return;
-  } catch (err) {}
+  } catch (error) {}
   log.verbose('Writing `.travis.yml`.');
   writeFileSync('.travis.yml', tyml);
   log.info('Successfully created `.travis.yml`.');
@@ -144,8 +144,8 @@ async function setUpTravis(pkg, info) {
     const {'dist-tags': distTags} = await request('https://registry.npmjs.org/travis-deploy-once');
     pkg.devDependencies = pkg.devDependencies || {};
     pkg.devDependencies['travis-deploy-once'] = `^${distTags[info.options.tag]}`;
-  } catch (err) {
-    log.error('Could not get latest `travis-deploy-once` version.', err);
+  } catch (error) {
+    log.error('Could not get latest `travis-deploy-once` version.', error);
   }
 
   log.verbose('Writing `package.json`.');
@@ -159,7 +159,7 @@ module.exports = async function(endpoint, pkg, info) {
   try {
     const travisConfig = yaml.safeLoad(readFileSync(travisPath, 'utf8'));
     token = travisConfig.endpoints[`${endpoint}/`].access_token;
-  } catch (err) {
+  } catch (error) {
     log.info('Could not load Travis CI config for endpoint.');
   }
 
