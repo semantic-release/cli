@@ -32,7 +32,7 @@ async function getNpmToken({npm, options}) {
   } catch (err) {
     const [error, , , response] = err;
 
-    if (error.code === 'E401' && response.headers['www-authenticate'] === 'OTP') {
+    if ((error.code === 'E401' || error.code === 'EOTP') && response.headers['www-authenticate'] === 'OTP') {
       await askForOTP(uri, body, npm);
       ({token} = npm);
     } else if (error.code === 'E409') {
