@@ -1,54 +1,23 @@
-const url = require('url');
 const _ = require('lodash');
-const pify = require('pify');
 const inquirer = require('inquirer');
 const npm = require('npm');
-const RegClient = require('npm-registry-client');
+const profile = require('npm-profile');
 const validator = require('validator');
 const log = require('npmlog');
 const passwordStorage = require('./password-storage')('npm');
 
-const client = new RegClient({log});
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org/';
 
 async function getNpmToken({npm, options}) {
-  const body = {
-    _id: `org.couchdb.user:${npm.username}`,
-    name: npm.username,
-    password: npm.password,
-    type: 'user',
-    roles: [],
-    date: new Date().toISOString(),
-  };
-
-  const uri = url.resolve(npm.registry, '-/user/org.couchdb.user:' + encodeURIComponent(npm.username));
   let token;
 
   try {
-    [{token}] = await pify(client.request.bind(client), {multiArgs: true})(uri, {
-      method: 'PUT',
-      body,
-    });
-  } catch (err) {
-    const [error, , , response] = err;
-
-    if ((error.code === 'E401' || error.code === 'EOTP') && response.headers['www-authenticate'] === 'OTP') {
-      await askForOTP(uri, body, npm);
-      ({token} = npm);
-    } else if (error.code === 'E409') {
-      // Some registries (Sinopia) return 409 for existing users, retry using authenticated call
-      try {
-        ({token} = await pify(client.request.bind(client))(uri, {
-          authed: true,
-          method: 'PUT',
-          auth: {username: npm.username, password: npm.password},
-          body,
-        }));
-      } catch (err) {
-        log.verbose(`Error: ${err}`);
-      }
-    } else {
-      log.verbose(`Error: ${error}`);
+    const result = await profile.loginCouch(npm.username, npm.password, {registry: npm.registry});
+    token = result.token;
+  } catch (error) {
+    if (error.code === 'EOTP') {
+      await askForOTP(npm);
+      token = npm.token;
     }
   }
 
@@ -61,26 +30,26 @@ async function getNpmToken({npm, options}) {
   log.info(`Successfully created npm token. ${npm.token}`);
 }
 
-function askForOTP(uri, body, npm) {
+function askForOTP(npm) {
   return inquirer.prompt({
     type: 'input',
     name: 'otp',
     message: 'What is your NPM two-factor authentication code?',
-    validate: answer => validateToken(answer, uri, body, npm),
+    validate: answer => validateToken(answer, npm),
   });
 }
 
-async function validateToken(otp, uri, body, npm) {
+async function validateToken(otp, npm) {
   if (!validator.isNumeric(otp)) {
     return false;
   }
 
   try {
-    const response = await pify(client.request.bind(client))(uri, {method: 'PUT', auth: {otp}, body});
-    if (response && response.ok) {
-      npm.token = response.token;
-      return true;
-    }
+    const {token} = await profile.loginCouch(npm.username, npm.password, {registry: npm.registry, otp});
+
+    npm.token = token;
+
+    return true;
   } catch (error) {
     // Invalid 2FA token
   }
