@@ -49,7 +49,7 @@
     "npm-profile": "^4.0.1",
     "npmlog": "^4.0.0",
     "p-retry": "^2.0.0",
-    "parse-git-config": "^2.0.0",
+    "parse-git-config": "^3.0.0",
     "parse-github-repo-url": "^1.0.0",
     "pify": "^4.0.0",
     "request": "^2.85.0",
