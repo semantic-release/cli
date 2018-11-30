@@ -4,11 +4,10 @@ const npm = require('npm');
 const profile = require('npm-profile');
 const validator = require('validator');
 const log = require('npmlog');
-const passwordStorage = require('./password-storage')('npm');
 
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org/';
 
-async function getNpmToken({npm, options}) {
+async function getNpmToken({npm}) {
   let token;
 
   try {
@@ -23,9 +22,6 @@ async function getNpmToken({npm, options}) {
 
   if (!token) throw new Error(`Could not login to npm.`);
 
-  if (options.keychain) {
-    passwordStorage.set(npm.username, npm.password);
-  }
   npm.token = token;
   log.info(`Successfully created npm token. ${npm.token}`);
 }
@@ -103,15 +99,6 @@ module.exports = async function(pkg, info) {
       name: 'password',
       message: 'What is your npm password?',
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
-      when: async answers => {
-        if (_.has(info.options, 'npm-token')) return false;
-        try {
-          const storedPassword = await passwordStorage.get(answers.username);
-          return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
-        } catch (error) {
-          log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
-        }
-      },
     },
     {
       type: 'input',
@@ -129,9 +116,6 @@ module.exports = async function(pkg, info) {
     return;
   }
 
-  const storedPassword = await passwordStorage.get(info.npm.username);
-
-  info.npm.password = info.npm.password || storedPassword;
   info.npm.authmethod = info.npm.authmethod || 'token';
 
   if (info.npm.authmethod === 'token') {
