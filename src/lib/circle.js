@@ -5,8 +5,6 @@ const inquirer = require('inquirer');
 const request = require('request-promise');
 const yaml = require('js-yaml');
 
-const passwordStorage = require('./password-storage')('circleci');
-
 const circleConfig = {
   version: 2,
   jobs: {
@@ -46,10 +44,9 @@ function getUserInput(info) {
         const clipboardValue = await clipboard.read();
         return clipboardValue.length === 40 ? clipboardValue : null;
       },
-      when: async () => {
+      when: () => {
         try {
-          const storedToken = await passwordStorage.get('token');
-          return !info.options.keychain || info.options['ask-for-passwords'] || !storedToken;
+          return info.options['ask-for-passwords'];
         } catch (error) {
           info.log.error(
             'Something went wrong with your stored api token. Delete them from your keychain and try again'
@@ -73,14 +70,6 @@ function getUserInput(info) {
       when: answers => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
     },
   ]);
-}
-
-async function processToken(info) {
-  if (!info.circle.token) {
-    info.circle.token = await passwordStorage.get('token');
-  } else if (info.options.keychain) {
-    passwordStorage.set('token', info.circle.token);
-  }
 }
 
 async function setupCircleProject(info) {
@@ -176,7 +165,6 @@ function stopRequestLogging() {
 module.exports = async function(pkg, info) {
   info.circle = await getUserInput(info);
   setupRequestLogging(info);
-  await processToken(info);
   await setupCircleProject(info);
   stopRequestLogging();
   await createConfigFile(info);

@@ -8,7 +8,6 @@ const validator = require('validator');
 const log = require('npmlog');
 const gitConfigPath = require('git-config-path')('global');
 const parse = require('parse-git-config');
-const passwordStorage = require('./password-storage')('github');
 
 async function ask2FA() {
   return (await inquirer.prompt([
@@ -85,20 +84,8 @@ module.exports = async function(pkg, info) {
       name: 'password',
       message: 'What is your GitHub password?',
       validate: _.ary(_.bind(validator.isLength, validator, _, 1), 1),
-      when: async answers => {
-        try {
-          const storedPassword = await passwordStorage.get(answers.username);
-          return !info.options.keychain || info.options['ask-for-passwords'] || !storedPassword;
-        } catch (error) {
-          log.error('Something went wrong with your stored credentials. Delete them from your keychain and try again');
-        }
-      },
     },
   ]);
-
-  if (!answers.password) {
-    answers.password = await passwordStorage.get(answers.username);
-  }
 
   info.github = answers;
   info.github.endpoint = info.ghepurl || 'https://api.github.com';
@@ -106,10 +93,6 @@ module.exports = async function(pkg, info) {
   const token = await createAuthorization(info);
 
   if (!token) throw new Error('Could not login to GitHub.');
-
-  if (info.options.keychain) {
-    passwordStorage.set(info.github.username, info.github.password);
-  }
 
   info.github.token = token;
   log.info('Successfully created GitHub token.');
