@@ -46,7 +46,6 @@ __semantic-release-cli performs the following steps:__
 	* Your GitHub password (unless passwords were previously saved to keychain)
 	* Which continuous integration system you want to use. (Options: Travis CI / Pro / Enterprise / CircleCI, or Other)
 	* [Travis only] Whether you want to test a single node.js version (e.g. - 8) or multiple node.js versions (e.g. - 4, 6, 8, etc.)
-1. Save your passwords to your local OS's keychain using [keytar](https://www.npmjs.com/package/keytar) for future use (unless `--no-keychain` was specified)
 1. npm Add User
 	* Runs `npm adduser` with the npm information provided to generate a `.npmrc`
 	* Parses the npm token from the `.npmrc` for future use
@@ -108,7 +107,7 @@ It also reads your GitHub username from your global `.gitconfig`. In order to au
 
 Please contribute! We welcome issues and pull requests.
 
-When committing, please conform to [the semantic-release commit standards](https://github.com/semantic-release/semantic-release#default-commit-message-format). 
+When committing, please conform to [the semantic-release commit standards](https://github.com/semantic-release/semantic-release#default-commit-message-format).
 
 ## License
 
