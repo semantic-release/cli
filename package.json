@@ -103,9 +103,6 @@
     ],
     "all": true
   },
-  "optionalDependencies": {
-    "keytar": "^4.0.4"
-  },
   "preferGlobal": true,
   "prettier": {
     "printWidth": 120,
