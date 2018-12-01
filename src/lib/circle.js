@@ -107,8 +107,7 @@ async function followProject(info, defaultReq) {
       info.log.info(`Succesfully followed repo ${info.ghrepo.slug[0]}/${info.ghrepo.slug[1]} on CircleCI.`);
     })
     .catch(() => {
-      info.log.error('Error following repo on CircleCI!');
-      process.exit(1); // eslint-disable-line unicorn/no-process-exit
+      info.log.warn('Error following repo on CircleCI! It might mean you are already following it, so I will try to continue.');
     });
 }
 
