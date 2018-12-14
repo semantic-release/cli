@@ -1,33 +1,13 @@
-const {readFileSync, writeFileSync, accessSync} = require('fs');
+const {readFileSync} = require('fs');
 const {join} = require('path');
 
 const _ = require('lodash');
 const pify = require('pify');
 const pRetry = require('p-retry');
 const home = require('user-home');
-const inquirer = require('inquirer');
 const Travis = require('travis-ci');
 const yaml = require('js-yaml');
 const log = require('npmlog');
-const request = require('request-promise').defaults({json: true});
-
-const travisyml = {
-  language: 'node_js',
-  cache: {
-    // https://twitter.com/maybekatz/status/905213355748720640
-    directories: ['~/.npm'],
-  },
-  notifications: {
-    email: false,
-  },
-  // https://github.com/nodejs/Release#release-schedule
-  node_js: ['10', '9', '8', '6'], // eslint-disable-line camelcase
-  after_success: ['npm run travis-deploy-once "npm run semantic-release"'], // eslint-disable-line camelcase
-  branches: {
-    // ignore git tags created by semantic-release, like "v1.2.3"
-    except: [/^v\d+\.\d+\.\d+$/.toString()],
-  },
-};
 
 async function isSyncing(travis) {
   const res = await pify(travis.users.get.bind(travis))();
@@ -58,36 +38,8 @@ async function setEnvVar(travis, name, value) {
   );
 }
 
-async function createTravisYml() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'yml',
-      message: 'Do you want a `.travis.yml` file with semantic-release setup?',
-      default: true,
-    },
-  ]);
-  if (!answers.yml) return;
-  const tyml = yaml.safeDump(travisyml);
-  try {
-    accessSync('.travis.yml');
-    const {ok} = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'ok',
-        default: false,
-        message: 'Do you want to overwrite the existing `.travis.yml`?',
-      },
-    ]);
-    if (!ok) return;
-  } catch (error) {}
-  log.verbose('Writing `.travis.yml`.');
-  writeFileSync('.travis.yml', tyml);
-  log.info('Successfully created `.travis.yml`.');
-}
-
 async function setUpTravis(pkg, info) {
-  const {travis, ci, endpoint} = info;
+  const {travis} = info;
 
   log.info('Syncing repositories...');
   await syncTravis(travis);
@@ -123,33 +75,6 @@ async function setUpTravis(pkg, info) {
   }
 
   log.info('Successfully set environment variables on Travis CI.');
-  await createTravisYml(info);
-
-  const cmd = 'travis-deploy-once';
-
-  // Travis CI Pro and Enterprise require additional flags to be set.
-  // Details: https://github.com/semantic-release/travis-deploy-once/issues/52
-  switch (ci) {
-    case 'Travis CI Pro':
-      pkg.scripts[cmd] = `${cmd} --pro`;
-      break;
-    case 'Travis CI Enterprise':
-      pkg.scripts[cmd] = `${cmd} --travis-url ${endpoint}`;
-      break;
-    default:
-      pkg.scripts[cmd] = cmd;
-  }
-
-  try {
-    const {'dist-tags': distTags} = await request('https://registry.npmjs.org/travis-deploy-once');
-    pkg.devDependencies = pkg.devDependencies || {};
-    pkg.devDependencies['travis-deploy-once'] = `^${distTags[info.options.tag]}`;
-  } catch (error) {
-    log.error('Could not get latest `travis-deploy-once` version.', error);
-  }
-
-  log.verbose('Writing `package.json`.');
-  writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
 module.exports = async function(endpoint, pkg, info) {
@@ -183,4 +108,8 @@ module.exports = async function(endpoint, pkg, info) {
   }
 
   await setUpTravis(pkg, info);
+
+  console.log(
+    'Please refer to https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md to configure your .travis.yml file.'
+  );
 };
