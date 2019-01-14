@@ -152,6 +152,7 @@ function createConfigFile(info) {
     info.log.verbose('Creating folder `./.circleci/`...');
     fs.mkdirSync('./.circleci');
   }
+
   const yml = yaml.safeDump(circleConfig);
   info.log.verbose('Writing `./.circleci/config.yml`...');
   fs.writeFileSync('./.circleci/config.yml', yml);

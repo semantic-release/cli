@@ -53,6 +53,7 @@ async function createAuthorization(info) {
       info.github.retry = true;
       return createAuthorization(info);
     }
+
     throw error;
   }
 }
