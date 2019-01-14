@@ -9,6 +9,8 @@ const request = require('request-promise').defaults({resolveWithFullResponse: tr
 const validator = require('validator');
 const log = require('npmlog');
 
+/* eslint-disable node/no-deprecated-api */
+
 function getRemoteUrl({repository}) {
   if (!repository || !repository.url) {
     const gitConfig = ini.decode(readFileSync('./.git/config', 'utf8'));
@@ -85,3 +87,5 @@ module.exports = async function(pkg, info) {
     throw new Error('Could not access GitHub repository');
   }
 };
+
+/* eslint-enable node/no-deprecated-api */

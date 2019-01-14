@@ -49,6 +49,7 @@ async function validateToken(otp, npm) {
   } catch (error) {
     // Invalid 2FA token
   }
+
   return 'Invalid authentication code';
 }
 
