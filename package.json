@@ -64,7 +64,7 @@
     "ava": "^1.0.1",
     "commitizen": "^3.0.0",
     "cz-conventional-changelog": "^2.0.0",
-    "nyc": "^12.0.1",
+    "nyc": "^13.2.0",
     "rimraf": "^2.4.2",
     "semantic-release": "^15.2.0",
     "xo": "^0.24.0"
