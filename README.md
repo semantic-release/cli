@@ -59,7 +59,12 @@ __semantic-release-cli performs the following steps:__
 	* Add or overwrite the [`repository` field](https://docs.npmjs.com/files/package.json#repository)
 
 ## Travis CI
-For Travis CI, `semantic-release-cli` performs the following additional steps:
+
+### Versions 4.1.0+
+`semantic-release-cli` does not perform any additional Travis-specific steps, but the cli output will provide a [link](https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md) for assistance integrating Travis and `semantic-release-cli`.
+
+### Prior to version 4.1.0
+`semantic-release-cli` performs the following additional steps:
 1. Overwrite your `.travis.yml` file
 	* `after_success`: `npm install -g travis-deploy-once` and `travis-deploy-once "npm run semantic-release"`: run `semantic-release` exactly once after all builds pass
 	* Set other sane defaults: `cache: directories: ~/.npm`, `notifications: email: false`
