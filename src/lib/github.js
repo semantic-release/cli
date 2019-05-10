@@ -36,7 +36,16 @@ async function createAuthorization(info) {
       auth: info.github,
       headers: {'User-Agent': 'semantic-release', 'X-GitHub-OTP': info.github.code},
       body: {
-        scopes: ['repo', 'read:org', 'user:email', 'repo_deployment', 'repo:status', 'write:repo_hook'],
+        scopes: [
+          'repo',
+          'read:org',
+          'user:email',
+          'repo_deployment',
+          'repo:status',
+          'write:repo_hook',
+          'write:packages',
+          'read:packages',
+        ],
         note: `semantic-release${node}`,
       },
     });
