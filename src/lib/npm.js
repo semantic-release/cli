@@ -100,6 +100,7 @@ module.exports = async function(pkg, info) {
       name: 'password',
       message: 'What is your npm password?',
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+      when: () => !_.has(info.options, 'npm-token'),
     },
     {
       type: 'input',
