@@ -111,13 +111,13 @@ module.exports = async function(pkg, info) {
     },
   ]);
 
+  info.npm.authmethod = info.npm.authmethod || 'token';
+
   if (_.has(info.options, 'npm-token')) {
     info.npm.token = info.options['npm-token'];
     log.info('Using npm token from command line argument.');
     return;
   }
-
-  info.npm.authmethod = info.npm.authmethod || 'token';
 
   if (info.npm.authmethod === 'token') {
     await getNpmToken(info);
