@@ -21,6 +21,7 @@ const knownOptions = {
   'ask-for-passwords': Boolean,
   'gh-token': String,
   'npm-token': String,
+  'circle-token': String,
   'gh-username': String,
   'npm-username': String,
 };
@@ -58,6 +59,7 @@ Options:
   --tag=<String>       npm tag to install [default: 'latest'].
   --gh-token=<String>  GitHub auth token
   --npm-token=<String> npm auth token
+  --circle-token=<String> CircleCI auth token
   --gh-username=<String>  GitHub username
   --npm-username=<String>  npm username
 

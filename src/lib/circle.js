@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const fs = require('fs');
 
 const clipboard = require('clipboardy');
@@ -44,16 +45,7 @@ function getUserInput(info) {
         const clipboardValue = await clipboard.read();
         return clipboardValue.length === 40 ? clipboardValue : null;
       },
-      when: () => {
-        try {
-          return info.options['ask-for-passwords'];
-        } catch (error) {
-          info.log.error(
-            'Something went wrong with your stored api token. Delete them from your keychain and try again'
-          );
-          process.exit(1); // eslint-disable-line unicorn/no-process-exit
-        }
-      },
+      when: () => !_.has(info.options, 'circle-token'),
     },
     {
       type: 'confirm',
@@ -69,7 +61,12 @@ function getUserInput(info) {
       message: 'Do you want to overwrite the existing `config.yml`?',
       when: answers => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
     },
-  ]);
+  ]).then((result) => {
+    if (_.has(info.options, 'circle-token')) {
+      result.token = info.options['circle-token'];
+    }
+    return result;
+  });
 }
 
 async function setupCircleProject(info) {
