@@ -27,6 +27,7 @@ semantic-release-cli setup
 	  --tag=<String>      npm tag to install [default: 'latest'].
     --gh-token=<String>  GitHub auth token
     --npm-token=<String> npm auth token
+    --circle-token=<String> CircleCI auth token
     --gh-username=<String>  GitHub username
     --npm-username=<String>  npm username
 
