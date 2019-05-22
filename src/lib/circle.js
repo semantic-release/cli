@@ -33,7 +33,7 @@ const circleConfig = {
   },
 };
 
-function getUserInput(info) {
+function getUserInput(/* info */) {
   return inquirer.prompt([
     {
       type: 'input',
