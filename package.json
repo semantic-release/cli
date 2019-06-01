@@ -61,7 +61,7 @@
     "validator": "^11.0.0"
   },
   "devDependencies": {
-    "ava": "^1.0.1",
+    "ava": "^2.0.0",
     "commitizen": "^3.0.0",
     "cz-conventional-changelog": "^2.0.0",
     "nyc": "^14.0.0",
