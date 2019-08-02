@@ -61,7 +61,7 @@ __semantic-release-cli performs the following steps:__
 ## Travis CI
 
 ### Versions 4.1.0+
-`semantic-release-cli` does not perform any additional Travis-specific steps, but the cli output will provide a [link](https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md) for assistance integrating Travis and `semantic-release-cli`.
+`semantic-release-cli` does not perform any additional Travis-specific steps, but the cli output will provide a [link](https://github.com/semantic-release/semantic-release/blob/master/docs/03-recipes/travis.md) for assistance integrating Travis and `semantic-release-cli`.
 
 ### Prior to version 4.1.0
 `semantic-release-cli` performs the following additional steps:
