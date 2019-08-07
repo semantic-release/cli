@@ -84,7 +84,7 @@ module.exports = async function(pkg, info) {
     ]);
     _.assign(info.ghrepo, answers);
     if (answers.private) return;
-    throw new Error('Could not access GitHub repository');
+    throw new Error('Could not access GitHub repository: ' + repoUrl);
   }
 };
 
