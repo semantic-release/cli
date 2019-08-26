@@ -33,7 +33,7 @@ const circleConfig = {
   },
 };
 
-function getUserInput(info) {
+function getUserInput(/* info */) {
   return inquirer.prompt([
     {
       type: 'input',
@@ -43,16 +43,6 @@ function getUserInput(info) {
       default: async () => {
         const clipboardValue = await clipboard.read();
         return clipboardValue.length === 40 ? clipboardValue : null;
-      },
-      when: () => {
-        try {
-          return info.options['ask-for-passwords'];
-        } catch (error) {
-          info.log.error(
-            'Something went wrong with your stored api token. Delete them from your keychain and try again'
-          );
-          process.exit(1); // eslint-disable-line unicorn/no-process-exit
-        }
       },
     },
     {
