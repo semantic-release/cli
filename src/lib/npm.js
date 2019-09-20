@@ -100,6 +100,7 @@ module.exports = async function(pkg, info) {
       name: 'password',
       message: 'What is your npm password?',
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
+      when: () => !_.has(info.options, 'npm-token'),
     },
     {
       type: 'input',
@@ -111,13 +112,13 @@ module.exports = async function(pkg, info) {
     },
   ]);
 
+  info.npm.authmethod = info.npm.authmethod || 'token';
+
   if (_.has(info.options, 'npm-token')) {
     info.npm.token = info.options['npm-token'];
     log.info('Using npm token from command line argument.');
     return;
   }
-
-  info.npm.authmethod = info.npm.authmethod || 'token';
 
   if (info.npm.authmethod === 'token') {
     await getNpmToken(info);

@@ -110,6 +110,6 @@ module.exports = async function(endpoint, pkg, info) {
   await setUpTravis(pkg, info);
 
   console.log(
-    'Please refer to https://github.com/semantic-release/semantic-release/blob/master/docs/03-recipes/travis.md to configure your .travis.yml file.'
+    'Please refer to https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md to configure your .travis.yml file.'
   );
 };

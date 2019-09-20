@@ -1,4 +1,5 @@
 const fs = require('fs');
+const _ = require('lodash');
 
 const clipboard = require('clipboardy');
 const inquirer = require('inquirer');
@@ -34,42 +35,41 @@ const circleConfig = {
 };
 
 function getUserInput(info) {
-  return inquirer.prompt([
-    {
-      type: 'input',
-      name: 'token',
-      message: 'What is your CircleCI API token?',
-      validate: input => (input.length === 40 ? true : 'Invalid token length'),
-      default: async () => {
-        const clipboardValue = await clipboard.read();
-        return clipboardValue.length === 40 ? clipboardValue : null;
+  return inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'token',
+        message: 'What is your CircleCI API token?',
+        validate: input => (input.length === 40 ? true : 'Invalid token length'),
+        default: async () => {
+          const clipboardValue = await clipboard.read();
+          return clipboardValue.length === 40 ? clipboardValue : null;
+        },
+        when: () => !_.has(info.options, 'circle-token'),
       },
-      when: () => {
-        try {
-          return info.options['ask-for-passwords'];
-        } catch (error) {
-          info.log.error(
-            'Something went wrong with your stored api token. Delete them from your keychain and try again'
-          );
-          process.exit(1); // eslint-disable-line unicorn/no-process-exit
-        }
+      {
+        type: 'confirm',
+        name: 'createConfigFile',
+        message: 'Do you want a `config.yml` file with semantic-release setup?',
+        default: true,
       },
-    },
-    {
-      type: 'confirm',
-      name: 'createConfigFile',
-      message: 'Do you want a `config.yml` file with semantic-release setup?',
-      default: true,
-    },
-    {
-      // Add step to existing config.yml later
-      type: 'confirm',
-      name: 'overwrite',
-      default: false,
-      message: 'Do you want to overwrite the existing `config.yml`?',
-      when: answers => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
-    },
-  ]);
+      {
+        // Add step to existing config.yml later
+        type: 'confirm',
+        name: 'overwrite',
+        default: false,
+        message: 'Do you want to overwrite the existing `config.yml`?',
+        when: answers => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
+      },
+    ])
+    .then(result => {
+      if (_.has(info.options, 'circle-token')) {
+        result.token = info.options['circle-token'];
+      }
+
+      return result;
+    });
 }
 
 async function setupCircleProject(info) {
