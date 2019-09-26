@@ -84,7 +84,7 @@ module.exports = async function(endpoint, pkg, info) {
   try {
     const travisConfig = yaml.safeLoad(readFileSync(travisPath, 'utf8'));
     token = travisConfig.endpoints[`${endpoint}/`].access_token;
-  } catch (error) {
+  } catch (_) {
     log.info('Could not load Travis CI config for endpoint.');
   }
 

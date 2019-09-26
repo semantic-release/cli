@@ -1,3 +1,5 @@
+/* eslint require-atomic-updates: off */
+
 const _ = require('lodash');
 const inquirer = require('inquirer');
 const npm = require('npm');
@@ -46,7 +48,7 @@ async function validateToken(otp, npm) {
     npm.token = token;
 
     return true;
-  } catch (error) {
+  } catch (_) {
     // Invalid 2FA token
   }
 

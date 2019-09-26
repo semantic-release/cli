@@ -1,3 +1,5 @@
+/* eslint require-atomic-updates: off */
+
 const crypto = require('crypto');
 const _ = require('lodash');
 const base32 = require('base32');
