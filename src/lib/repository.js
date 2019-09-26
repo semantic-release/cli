@@ -73,7 +73,7 @@ module.exports = async function(pkg, info) {
 
   try {
     await request.head(repoUrl);
-  } catch (error) {
+  } catch (_) {
     const answers = await inquirer.prompt([
       {
         type: 'confirm',
