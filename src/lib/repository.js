@@ -73,7 +73,7 @@ module.exports = async function(pkg, info) {
 
   try {
     await request.head(repoUrl);
-  } catch (_) {
+  } catch (error /* eslint-disable-line no-unused-vars */) {
     const answers = await inquirer.prompt([
       {
         type: 'confirm',
