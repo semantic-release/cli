@@ -57,7 +57,6 @@ async function validateToken(otp, npm) {
 
 function getRegistry(pkg, conf) {
   if (pkg.publishConfig && pkg.publishConfig.registry) return pkg.publishConfig.registry;
-  if (pkg.name === undefined) throw new Error(`Your package doesn't have name`);
   if (pkg.name[0] !== '@') return conf.get('registry') || DEFAULT_REGISTRY;
 
   const [scope] = pkg.name.split('/');
