@@ -1,3 +1,5 @@
+/* eslint require-atomic-updates: off */
+
 const {readFileSync, writeFileSync} = require('fs');
 const _ = require('lodash');
 const pify = require('pify');
