@@ -46,7 +46,7 @@
     "p-retry": "^4.0.0",
     "parse-git-config": "^3.0.0",
     "parse-github-repo-url": "^1.0.0",
-    "pify": "^4.0.0",
+    "pify": "^5.0.0",
     "request": "^2.85.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.1.1",
