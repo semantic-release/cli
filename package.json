@@ -41,7 +41,7 @@
     "lodash": "^4.16.4",
     "nopt": "^4.0.0",
     "npm": "^6.0.0",
-    "npm-profile": "^4.0.1",
+    "npm-profile": "^5.0.0",
     "npmlog": "^4.0.0",
     "p-retry": "^4.0.0",
     "parse-git-config": "^3.0.0",
