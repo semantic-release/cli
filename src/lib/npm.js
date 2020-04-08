@@ -33,7 +33,7 @@ function askForOTP(npm) {
     type: 'input',
     name: 'otp',
     message: 'What is your NPM two-factor authentication code?',
-    validate: answer => validateToken(answer, npm),
+    validate: (answer) => validateToken(answer, npm),
   });
 }
 
@@ -68,7 +68,7 @@ function getRegistry(pkg, conf) {
   return conf.get('registry') || DEFAULT_REGISTRY;
 }
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   info.npm = await inquirer.prompt([
     {
       type: 'input',
@@ -85,9 +85,12 @@ module.exports = async function(pkg, info) {
       type: 'list',
       name: 'authmethod',
       message: 'Which authentication method is this npm registry using?',
-      choices: [{name: 'Token based', value: 'token'}, {name: 'Legacy (username, password, email)', value: 'legacy'}],
+      choices: [
+        {name: 'Token based', value: 'token'},
+        {name: 'Legacy (username, password, email)', value: 'legacy'},
+      ],
       default: 'token',
-      when: answers => answers.registry !== DEFAULT_REGISTRY && !_.has(info.options, 'npm-token'),
+      when: (answers) => answers.registry !== DEFAULT_REGISTRY && !_.has(info.options, 'npm-token'),
     },
     {
       type: 'input',
@@ -110,7 +113,7 @@ module.exports = async function(pkg, info) {
       message: 'What is your npm email address?',
       default: info.options['npm-username'] || npm.config.get('init-author-email'),
       validate: _.ary(_.bind(validator.isLength, null, _, 1), 1),
-      when: answers => answers.authmethod === 'legacy',
+      when: (answers) => answers.authmethod === 'legacy',
     },
   ]);
 

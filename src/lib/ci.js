@@ -22,7 +22,7 @@ ${_.repeat('-', 46)}
   },
 };
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   const choices = _.keys(cis);
 
   const answers = await inquirer.prompt([
@@ -38,7 +38,7 @@ module.exports = async function(pkg, info) {
       name: 'endpoint',
       message: 'What is your Travis CI enterprise url?',
       validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}), // eslint-disable-line camelcase
-      when: answers => answers.ci === choices[2],
+      when: (answers) => answers.ci === choices[2],
     },
   ]);
 

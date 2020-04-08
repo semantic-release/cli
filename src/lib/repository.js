@@ -27,7 +27,7 @@ function getRemoteUrl({repository}) {
   return repository.url;
 }
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   let repoUrl;
   try {
     repoUrl = await getRemoteUrl(pkg);

@@ -33,7 +33,7 @@ const shortHands = {
   h: ['--help'],
 };
 
-module.exports = async function(argv) {
+module.exports = async function (argv) {
   const info = {
     options: _.defaults(nopt(knownOptions, shortHands, argv, 2), {
       keychain: true,
@@ -58,7 +58,7 @@ Options:
   -v --version         Show version.
   --[no-]keychain      Use keychain to get passwords [default: true].
   --ask-for-passwords  Ask for the passwords even if passwords are stored [default: false].
-  --tag=<String>       npm tag to install [default: 'latest'].
+  --tag=<String>       npm tag to install [default: ’latest’].
   --gh-token=<String>  GitHub auth token
   --npm-token=<String> npm auth token
   --circle-token=<String> CircleCI auth token
