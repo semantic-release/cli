@@ -5,12 +5,14 @@ const inquirer = require('inquirer');
 const validator = require('validator');
 const travis = require('./travis');
 const circle = require('./circle');
+const githubActions = require('./github-actions');
 
 const cis = {
   'Travis CI': travis.bind(null, 'https://api.travis-ci.org'),
   'Travis CI Pro': travis.bind(null, 'https://api.travis-ci.com'),
   'Travis CI Enterprise': travis,
   'Circle CI': circle,
+  'Github Actions': githubActions,
   'Other (prints tokens)': (pkg, info) => {
     const message = `
 ${_.repeat('-', 46)}

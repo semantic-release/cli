@@ -51,6 +51,7 @@
     "request-debug": "^0.2.0",
     "request-promise": "^4.1.1",
     "travis-ci": "^2.1.1",
+    "tweetsodium": "^0.0.5",
     "update-notifier": "^3.0.0",
     "user-home": "^2.0.0",
     "validator": "^12.0.0"
