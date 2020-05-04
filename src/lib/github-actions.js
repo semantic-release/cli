@@ -57,7 +57,7 @@ async function createSecret(info) {
 
       if (responsePut.statusCode !== 201 && responsePut.statusCode !== 204) {
         throw new Error(
-          `Can't add the NPM_TOKEN secret to Github Actions. Please add it manually: NPM_TOKEN=${info.npm.token}`
+          `Can’t add the NPM_TOKEN secret to Github Actions. Please add it manually: NPM_TOKEN=${info.npm.token}`
         );
       }
     }
