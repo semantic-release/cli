@@ -96,6 +96,30 @@ jobs:
 2. Login to CircleCI to configure the package
 	* Enable builds of your repo
 	* Add `GH_TOKEN` and `NPM_TOKEN` environment variables in the settings
+	
+	
+## Github Actions
+
+For Github Actions, `semantic-release-cli` performs the following additional step:
+* Login to Github to configure the package
+	* Add `NPM_TOKEN` environment variables as a secret in the settings
+
+For now you will have to manually modify your existing workflow to add a release step. Here is an example of a small complete workflow `.github/workflows/workflow.yml`:
+```yaml
+name: CI
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bahmutov/npm-install@v1
+      - run: npm test
+      - name: Release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+```
 
 ## Other CI Servers
 
