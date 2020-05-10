@@ -113,7 +113,10 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@v2
-      - uses: bahmutov/npm-install@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - run: npm ci
       - run: npm test
       - name: Release
         env:
