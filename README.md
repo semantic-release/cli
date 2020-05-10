@@ -102,7 +102,7 @@ jobs:
 
 For Github Actions, `semantic-release-cli` performs the following additional step:
 * Login to Github to configure the package
-	* Add `NPM_TOKEN` environment variables as a secret in the settings
+* Add `NPM_TOKEN` environment variables as a secret in the settings
 
 For now you will have to manually modify your existing workflow to add a release step. Here is an example of a small complete workflow `.github/workflows/workflow.yml`:
 ```yaml
