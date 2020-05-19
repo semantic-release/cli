@@ -13,7 +13,7 @@ async function getNpmToken({npm}) {
   let token;
 
   try {
-    const result = await profile.loginCouch(npm.username, npm.password, {registry: npm.registry});
+    const result = await profile.loginCouch(npm.username.toLowerCase(), npm.password, {registry: npm.registry});
     token = result.token;
   } catch (error) {
     if (error.code === 'EOTP') {
