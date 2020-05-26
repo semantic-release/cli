@@ -5,12 +5,14 @@ const inquirer = require('inquirer');
 const validator = require('validator');
 const travis = require('./travis');
 const circle = require('./circle');
+const githubActions = require('./github-actions');
 
 const cis = {
   'Travis CI': travis.bind(null, 'https://api.travis-ci.org'),
   'Travis CI Pro': travis.bind(null, 'https://api.travis-ci.com'),
   'Travis CI Enterprise': travis,
   'Circle CI': circle,
+  'Github Actions': githubActions,
   'Other (prints tokens)': (pkg, info) => {
     const message = `
 ${_.repeat('-', 46)}
@@ -22,7 +24,7 @@ ${_.repeat('-', 46)}
   },
 };
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   const choices = _.keys(cis);
 
   const answers = await inquirer.prompt([
@@ -38,7 +40,7 @@ module.exports = async function(pkg, info) {
       name: 'endpoint',
       message: 'What is your Travis CI enterprise url?',
       validate: _.bind(validator.isURL, null, _, {protocols: ['http', 'https'], require_protocol: true}), // eslint-disable-line camelcase
-      when: answers => answers.ci === choices[2],
+      when: (answers) => answers.ci === choices[2],
     },
   ]);
 

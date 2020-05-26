@@ -10,8 +10,8 @@ const yaml = require('js-yaml');
 const log = require('npmlog');
 
 async function isSyncing(travis) {
-  const res = await pify(travis.users.get.bind(travis))();
-  return _.get(res, 'user.is_syncing');
+  const response = await pify(travis.users.get.bind(travis))();
+  return _.get(response, 'user.is_syncing');
 }
 
 async function syncTravis(travis) {
@@ -41,7 +41,7 @@ async function setEnvVar(travis, name, value) {
 async function setUpTravis(pkg, info) {
   const {travis} = info;
 
-  log.info('Syncing repositories...');
+  log.info('Syncing repositories…');
   await syncTravis(travis);
 
   const [githubOrg, repoName] = info.ghrepo.slug;
@@ -77,7 +77,7 @@ async function setUpTravis(pkg, info) {
   log.info('Successfully set environment variables on Travis CI.');
 }
 
-module.exports = async function(endpoint, pkg, info) {
+module.exports = async function (endpoint, pkg, info) {
   const travisPath = join(home, '.travis/config.yml');
   let token;
 

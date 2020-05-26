@@ -12,14 +12,16 @@ const gitConfigPath = require('git-config-path')('global');
 const parse = require('parse-git-config');
 
 async function ask2FA() {
-  return (await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'code',
-      message: 'What is your GitHub two-factor authentication code?',
-      validate: validator.isNumeric,
-    },
-  ])).code;
+  return (
+    await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'code',
+        message: 'What is your GitHub two-factor authentication code?',
+        validate: validator.isNumeric,
+      },
+    ])
+  ).code;
 }
 
 function randomId() {
@@ -69,7 +71,7 @@ async function createAuthorization(info) {
   }
 }
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   if (_.has(info.options, 'gh-token')) {
     info.github = {
       endpoint: info.ghepurl || 'https://api.github.com',

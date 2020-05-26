@@ -36,46 +36,44 @@ const circleConfig = {
   },
 };
 
-function getUserInput(info) {
-  return inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'token',
-        message: 'What is your CircleCI API token?',
-        validate: input => (input.length === 40 ? true : 'Invalid token length'),
-        default: async () => {
-          const clipboardValue = await clipboard.read();
-          return clipboardValue.length === 40 ? clipboardValue : null;
-        },
-        when: () => !_.has(info.options, 'circle-token'),
+async function getUserInput(info) {
+  const result = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'token',
+      message: 'What is your CircleCI API token?',
+      validate: (input) => (input.length === 40 ? true : 'Invalid token length'),
+      default: async () => {
+        const clipboardValue = await clipboard.read();
+        return clipboardValue.length === 40 ? clipboardValue : null;
       },
-      {
-        type: 'confirm',
-        name: 'createConfigFile',
-        message: 'Do you want a `config.yml` file with semantic-release setup?',
-        default: true,
-      },
-      {
-        // Add step to existing config.yml later
-        type: 'confirm',
-        name: 'overwrite',
-        default: false,
-        message: 'Do you want to overwrite the existing `config.yml`?',
-        when: answers => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
-      },
-    ])
-    .then(result => {
-      if (_.has(info.options, 'circle-token')) {
-        result.token = info.options['circle-token'];
-      }
+      when: () => !_.has(info.options, 'circle-token'),
+    },
+    {
+      type: 'confirm',
+      name: 'createConfigFile',
+      message: 'Do you want a `config.yml` file with semantic-release setup?',
+      default: true,
+    },
+    {
+      // Add step to existing config.yml later
+      type: 'confirm',
+      name: 'overwrite',
+      default: false,
+      message: 'Do you want to overwrite the existing `config.yml`?',
+      when: (answers) => answers.createConfigFile && fs.existsSync('./.circleci/config.yml'),
+    },
+  ]);
 
-      return result;
-    });
+  if (_.has(info.options, 'circle-token')) {
+    result.token = info.options['circle-token'];
+  }
+
+  return result;
 }
 
 async function setupCircleProject(info) {
-  const defaultReq = request.defaults({
+  const defaultRequest = request.defaults({
     headers: {
       'content-type': 'application/json',
       accept: 'application/json',
@@ -88,22 +86,22 @@ async function setupCircleProject(info) {
     simple: true,
   });
 
-  await followProject(info, defaultReq);
-  await addEnvironmentVariable(info, defaultReq, {name: 'GH_TOKEN', value: info.github.token});
+  await followProject(info, defaultRequest);
+  await addEnvironmentVariable(info, defaultRequest, {name: 'GH_TOKEN', value: info.github.token});
 
   if (info.npm.authmethod === 'token') {
-    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_TOKEN', value: info.npm.token});
+    await addEnvironmentVariable(info, defaultRequest, {name: 'NPM_TOKEN', value: info.npm.token});
   } else {
-    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_USERNAME', value: info.npm.username});
-    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_PASSWORD', value: info.npm.password});
-    await addEnvironmentVariable(info, defaultReq, {name: 'NPM_EMAIL', value: info.npm.email});
+    await addEnvironmentVariable(info, defaultRequest, {name: 'NPM_USERNAME', value: info.npm.username});
+    await addEnvironmentVariable(info, defaultRequest, {name: 'NPM_PASSWORD', value: info.npm.password});
+    await addEnvironmentVariable(info, defaultRequest, {name: 'NPM_EMAIL', value: info.npm.email});
   }
 }
 
-async function followProject(info, defaultReq) {
-  info.log.verbose(`Following repo ${info.ghrepo.slug[0]}/${info.ghrepo.slug[1]} on CircleCI...`);
+async function followProject(info, defaultRequest) {
+  info.log.verbose(`Following repo ${info.ghrepo.slug[0]}/${info.ghrepo.slug[1]} on CircleCI…`);
   const uri = `/follow`;
-  await defaultReq
+  await defaultRequest
     .post(uri)
     .then(() => {
       info.log.info(`Succesfully followed repo ${info.ghrepo.slug[0]}/${info.ghrepo.slug[1]} on CircleCI.`);
@@ -114,10 +112,10 @@ async function followProject(info, defaultReq) {
     });
 }
 
-async function addEnvironmentVariable(info, defaultReq, body) {
-  info.log.verbose(`Adding environment variable ${body.name} to CircleCI project...`);
+async function addEnvironmentVariable(info, defaultRequest, body) {
+  info.log.verbose(`Adding environment variable ${body.name} to CircleCI project…`);
   const uri = `/envvar`;
-  await defaultReq
+  await defaultRequest
     .post(uri, {body})
     .then(() => {
       info.log.info(`Successfully added environment variable ${body.name} to CircleCI project.`);
@@ -151,12 +149,12 @@ function createConfigFile(info) {
   }
 
   if (!fs.existsSync('./.circleci/')) {
-    info.log.verbose('Creating folder `./.circleci/`...');
+    info.log.verbose('Creating folder `./.circleci/`…');
     fs.mkdirSync('./.circleci');
   }
 
   const yml = yaml.safeDump(circleConfig);
-  info.log.verbose('Writing `./.circleci/config.yml`...');
+  info.log.verbose('Writing `./.circleci/config.yml`…');
   fs.writeFileSync('./.circleci/config.yml', yml);
   info.log.info('Successfully written `./.circleci/config.yml`.');
 }
@@ -165,7 +163,7 @@ function stopRequestLogging() {
   request.stopDebugging();
 }
 
-module.exports = async function(pkg, info) {
+module.exports = async function (pkg, info) {
   info.circle = await getUserInput(info);
   setupRequestLogging(info);
   await setupCircleProject(info);
