@@ -57,7 +57,6 @@ async function validateToken(otp, npm) {
 
 function getRegistry(pkg, conf) {
   if (pkg.publishConfig && pkg.publishConfig.registry) return pkg.publishConfig.registry;
-
   if (pkg.name[0] !== '@') return conf.get('registry') || DEFAULT_REGISTRY;
 
   const [scope] = pkg.name.split('/');

@@ -10,6 +10,7 @@ const ownPkg = require('../package.json');
 const getLog = require('./lib/log');
 
 const pkg = JSON.parse(readFileSync('./package.json'));
+if (pkg.name === undefined) throw new Error(`"name" key is missing from your package.json`);
 
 require('update-notifier')({
   pkg: _.defaults(ownPkg, {version: '0.0.0'}),
