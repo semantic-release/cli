@@ -1,3 +1,7 @@
+# ⚠️ Currently brokeng for GitHub due to defunkt Basic Auth APIs
+
+See [#351](https://github.com/semantic-release/cli/issues/351)
+
 # semantic-release-cli
 
 [![Travis](https://img.shields.io/travis/semantic-release/cli.svg)](https://travis-ci.org/semantic-release/cli)
