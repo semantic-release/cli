@@ -25,7 +25,6 @@ const knownOptions = {
   'gh-token': String,
   'npm-token': String,
   'circle-token': String,
-  'gh-username': String,
   'npm-username': String,
 };
 
@@ -63,7 +62,6 @@ Options:
   --gh-token=<String>  GitHub auth token
   --npm-token=<String> npm auth token
   --circle-token=<String> CircleCI auth token
-  --gh-username=<String>  GitHub username
   --npm-username=<String>  npm username
 
 Aliases:
@@ -87,7 +85,7 @@ Aliases:
   try {
     await require('./lib/repository')(pkg, info);
     await require('./lib/npm')(pkg, info);
-    await require('./lib/github')(pkg, info);
+    await require('./lib/github')(info);
     await require('./lib/ci')(pkg, info);
   } catch (error) {
     log.error(error);
