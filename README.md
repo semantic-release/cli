@@ -1,7 +1,3 @@
-# ⚠️ Currently brokeng for GitHub due to defunkt Basic Auth APIs
-
-See [#351](https://github.com/semantic-release/cli/issues/351)
-
 # semantic-release-cli
 
 [![Travis](https://img.shields.io/travis/semantic-release/cli.svg)](https://travis-ci.org/semantic-release/cli)
@@ -32,7 +28,6 @@ semantic-release-cli setup
     --gh-token=<String>  GitHub auth token
     --npm-token=<String> npm auth token
     --circle-token=<String> CircleCI auth token
-    --gh-username=<String>  GitHub username
     --npm-username=<String>  npm username
 
 	Aliases:
@@ -47,16 +42,13 @@ __semantic-release-cli performs the following steps:__
 	* Your npm username (unless passwords were previously saved to keychain)
 	* Your npm email
 	* Your npm password
-	* Your GitHub username
-	* Your GitHub password (unless passwords were previously saved to keychain)
 	* Which continuous integration system you want to use. (Options: Travis CI / Pro / Enterprise / CircleCI, or Other)
 	* [Travis only] Whether you want to test a single node.js version (e.g. - 8) or multiple node.js versions (e.g. - 4, 6, 8, etc.)
 1. npm Add User
 	* Runs `npm adduser` with the npm information provided to generate a `.npmrc`
 	* Parses the npm token from the `.npmrc` for future use
-1. Create GitHub Personal Token
-	* Logs into GitHub using the username and password provided
-	* Creates (and saves for later use) a [GitHub Personal Access Token](https://github.com/settings/tokens) with the following permissions: *repo, read:org, repo:status, repo_deployment, user:email, write:repo_hook*
+1. Uses user supplied GitHub Personal Access Token (with the following permissions: `repo`, `read:org`, `repo:status`, `repo_deployment`, `user:email`, `write:repo_hook`)
+	* Sets GitHub Personal Access Token in user choosen CI/CD environment variable
 1. Update your `package.json`
 	* Set `version` field to `0.0.0-development` (`semantic-release` will set the version for you automatically)
 	* Add a `semantic-release` script: `"semantic-release": "semantic-release"`
@@ -100,8 +92,8 @@ jobs:
 2. Login to CircleCI to configure the package
 	* Enable builds of your repo
 	* Add `GH_TOKEN` and `NPM_TOKEN` environment variables in the settings
-	
-	
+
+
 ## Github Actions
 
 For Github Actions, `semantic-release-cli` performs the following additional step:
@@ -137,8 +129,6 @@ Note that your CI server will also need to set the environment variable `CI=true
 ## Setting defaults
 
 This package reads your npm username from your global `.npmrc`. In order to autosuggest a username in the future, make sure to set your username there: `npm config set username <username>`.
-
-It also reads your GitHub username from your global `.gitconfig`. In order to autosuggest a username in the future, run `git config --global --add github.username <username>`. If a name isn't defined here, it will default to using your npm username, as it will assume they are identical.
 
 ## Contribute
 
