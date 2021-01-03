@@ -24,9 +24,6 @@
   "bin": {
     "semantic-release-cli": "./bin/semantic-release.js"
   },
-  "bugs": {
-    "url": "https://github.com/semantic-release/cli/issues"
-  },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
@@ -71,13 +68,9 @@
     "bin",
     "src"
   ],
-  "homepage": "https://github.com/semantic-release/cli",
   "keywords": [
-    "author",
     "automation",
     "changelog",
-    "module",
-    "package",
     "publish",
     "release",
     "semver",
@@ -101,10 +94,7 @@
     "printWidth": 120,
     "trailingComma": "es5"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/semantic-release/cli.git"
-  },
+  "repository": "https://github.com/semantic-release/cli",
   "scripts": {
     "codecov": "codecov -f coverage/coverage-final.json",
     "lint": "xo",
