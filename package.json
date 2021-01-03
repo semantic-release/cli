@@ -111,6 +111,7 @@
     "pretest": "npm run lint",
     "semantic-release": "semantic-release",
     "test": "nyc ava -v",
+    "test:ci": "nyc ava -v",
     "travis-deploy-once": "travis-deploy-once"
   },
   "xo": {
