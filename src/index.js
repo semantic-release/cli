@@ -85,7 +85,7 @@ Aliases:
   try {
     await require('./lib/repository')(pkg, info);
     await require('./lib/npm')(pkg, info);
-    await require('./lib/github')(info);
+    await require('./lib/github')(pkg, info);
     await require('./lib/ci')(pkg, info);
   } catch (error) {
     log.error(error);

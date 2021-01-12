@@ -5,7 +5,7 @@ const _ = require('lodash');
 const inquirer = require('inquirer');
 const log = require('npmlog');
 
-module.exports = async function (info) {
+module.exports = async function (pkg, info) {
   if (_.has(info.options, 'gh-token')) {
     info.github = {
       endpoint: info.ghepurl || 'https://api.github.com',
@@ -20,7 +20,7 @@ module.exports = async function (info) {
       type: 'input',
       name: 'token',
       message:
-        'Provide a GItHub Personal Access Token (create a token at https://github.com/settings/tokens/new?scopes=repo)',
+        'Provide a GitHub Personal Access Token (create a token at https://github.com/settings/tokens/new?scopes=repo)',
       default: async () => {
         const clipboardValue = await clipboard.read();
         return clipboardValue.length === 40 ? clipboardValue : null;
