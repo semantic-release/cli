@@ -20,7 +20,7 @@ module.exports = async function (info) {
       type: 'input',
       name: 'token',
       message:
-        'Provide a GItHub Personal Access Token (create a token at https://github.com/settings/tokens/new?scopes=repo)',
+        'Provide a GitHub Personal Access Token (create a token at https://github.com/settings/tokens/new?scopes=repo)',
       default: async () => {
         const clipboardValue = await clipboard.read();
         return clipboardValue.length === 40 ? clipboardValue : null;
