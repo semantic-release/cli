@@ -35,5 +35,6 @@ module.exports = async function (info) {
   if (!token) throw new Error('User could not supply GitHub Personal Access Token.');
 
   info.github.token = token;
+  info.github.endpoint = 'https://api.github.com';
   log.info('Successfully created GitHub token.');
 };
