@@ -35,7 +35,9 @@ async function createSecret(info) {
     const response = await request({
       method: 'GET',
       url: `${info.github.endpoint}/repos/${owner}/${repo}/actions/secrets/public-key`,
-      auth: info.github,
+      auth: {
+        bearer: info.github.token,
+      },
       headers: {'User-Agent': 'semantic-release', 'X-GitHub-OTP': info.github.code},
     });
     if (response.statusCode === 200) {
@@ -46,7 +48,9 @@ async function createSecret(info) {
       const responsePut = await request({
         method: 'PUT',
         url: `${info.github.endpoint}/repos/${owner}/${repo}/actions/secrets/NPM_TOKEN`,
-        auth: info.github,
+        auth: {
+          bearer: info.github.token,
+        },
         headers: {'User-Agent': 'semantic-release', 'X-GitHub-OTP': info.github.code},
         json: true,
         body: {
