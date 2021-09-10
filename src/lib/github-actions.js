@@ -57,6 +57,7 @@ async function createSecret(info) {
           encrypted_value: encryptedValue, // eslint-disable-line camelcase
           key_id: keyId, // eslint-disable-line camelcase
         },
+        followAllRedirects: true,
       });
 
       if (responsePut.statusCode !== 201 && responsePut.statusCode !== 204) {
