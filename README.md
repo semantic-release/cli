@@ -1,6 +1,6 @@
 # semantic-release-cli
 
-[![Build Status](https://github.com/semantic-release/cli/workflows/Test/badge.svg)](https://github.com/semantic-release/cli/actions?query=workflow%3ATest+
+[![Build Status](https://github.com/semantic-release/cli/workflows/Test/badge.svg)](https://github.com/semantic-release/cli/actions?query=workflow%3ATest+)
 
 ## Install
 
