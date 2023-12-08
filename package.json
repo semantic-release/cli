@@ -5,14 +5,14 @@
   "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
   "ava": {
     "require": [
-      "babel-register",
-      "babel-polyfill"
+      "@babel/register",
+      "@babel/polyfill"
     ]
   },
   "babel": {
     "presets": [
       [
-        "env",
+        "@babel/preset-env",
         {
           "targets": {
             "node": "current"
@@ -25,9 +25,9 @@
     "semantic-release-cli": "./bin/semantic-release.js"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-register": "^6.26.0",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/register": "^7.22.15",
     "base32": "0.0.6",
     "clipboardy": "^2.0.0",
     "git-config-path": "^2.0.0",
