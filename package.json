@@ -3,31 +3,10 @@
   "description": "setup automated semver compliant package publishing",
   "version": "0.0.0-development",
   "author": "Christoph Witzko <npm@christophwitzko.com> (http://christophwitzko.com)",
-  "ava": {
-    "require": [
-      "@babel/register",
-      "@babel/polyfill"
-    ]
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ]
-    ]
-  },
   "bin": {
     "semantic-release-cli": "./bin/semantic-release.js"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.23.5",
-    "@babel/register": "^7.22.15",
     "base32": "0.0.6",
     "clipboardy": "^2.0.0",
     "git-config-path": "^2.0.0",
