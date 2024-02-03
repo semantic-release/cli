@@ -17,7 +17,7 @@ const cis = {
     const message = `
 ${_.repeat('-', 46)}
 GH_TOKEN=${info.github.token}
-NPM_TOKEN=${info.npm.token}
+${info.options.npm ? "NPM_TOKEN=" + info.npm.token : ""}
 ${_.repeat('-', 46)}
 `;
     console.log(message);

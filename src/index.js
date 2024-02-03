@@ -21,6 +21,7 @@ const knownOptions = {
   version: Boolean,
   help: Boolean,
   keychain: Boolean,
+  npm: Boolean,
   'ask-for-passwords': Boolean,
   'gh-token': String,
   'npm-token': String,
@@ -63,6 +64,7 @@ Options:
   --npm-token=<String> npm auth token
   --circle-token=<String> CircleCI auth token
   --npm-username=<String>  npm username
+  --no-npm             Do not setup npm.
 
 Aliases:
   init                 setup`);
@@ -84,7 +86,9 @@ Aliases:
 
   try {
     await require('./lib/repository')(pkg, info);
-    await require('./lib/npm')(pkg, info);
+    if (info.options.npm) {
+      await require('./lib/npm')(pkg, info);
+    }
     await require('./lib/github')(info);
     await require('./lib/ci')(pkg, info);
   } catch (error) {

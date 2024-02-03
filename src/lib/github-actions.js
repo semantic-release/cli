@@ -84,6 +84,10 @@ async function createSecret(info) {
 }
 
 module.exports = async function (pkg, info) {
+  if(!info.options.npm){
+    log.info('Skipping creation of GitHub Actions NPM_TOKEN secret.');
+    return;
+  }
   await createSecret(info);
 
   log.info('Successfully created GitHub Actions NPM_TOKEN secret.');
